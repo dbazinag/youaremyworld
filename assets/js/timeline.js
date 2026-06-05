@@ -8,6 +8,7 @@
    ========================================================= */
 
 import { supabase } from "./supabase.js";
+import exifr from "https://esm.sh/exifr@7";
 
 let root = null;
 let memories = [];
@@ -29,7 +30,36 @@ async function load() {
 
   if (error) { setStatus("couldn't load memories 😿 — " + error.message); return; }
   memories = data || [];
+  refreshPlaceOptions();
   render();
+}
+
+/* suggest places already used, so we don't fragment "Paris" / "Paris, FR" */
+function refreshPlaceOptions() {
+  const places = [...new Set(memories.map((m) => (m.place || "").trim()).filter(Boolean))].sort();
+  const dl = root.querySelector("#place-options");
+  if (dl) dl.innerHTML = places.map((p) => `<option value="${esc(p)}"></option>`).join("");
+}
+
+/* auto-fill the date from the first photo's EXIF "date taken" (if blank) */
+async function onPhotoPicked(e) {
+  const dateInput = root.querySelector('input[name="date"]');
+  if (dateInput.value) return;                 // don't clobber a typed date
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  try {
+    const data = await exifr.parse(file, ["DateTimeOriginal", "CreateDate"]);
+    const dt = data && (data.DateTimeOriginal || data.CreateDate);
+    if (dt instanceof Date && !isNaN(dt)) {
+      dateInput.value = toYMD(dt);
+      setStatus("📅 date filled in from the photo");
+    }
+  } catch (_) { /* no EXIF — leave it for them to type */ }
+}
+
+function toYMD(d) {
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
 function photosOf(m) {
@@ -243,6 +273,7 @@ function wire() {
     e.preventDefault();
     addMemory(e.currentTarget);
   });
+  root.querySelector('input[name="photo"]').addEventListener("change", onPhotoPicked);
   root.querySelector(".tl-toggle").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) { mode = b.dataset.mode; render(); }
@@ -315,7 +346,8 @@ function shell() {
         <input name="date" type="date" required />
       </label>
       <label>where? <span class="opt">(optional — groups it in the sky)</span>
-        <input name="place" maxlength="40" placeholder="Lausanne, our Paris trip…" />
+        <input name="place" maxlength="40" list="place-options" autocomplete="off" placeholder="Lausanne, our Paris trip…" />
+        <datalist id="place-options"></datalist>
       </label>
       <label>a little note <span class="opt">(optional)</span>
         <textarea name="note" maxlength="500" rows="2" placeholder="something to remember…"></textarea>
