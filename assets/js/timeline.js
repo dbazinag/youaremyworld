@@ -11,12 +11,20 @@ import { supabase } from "./supabase.js";
 import exifr from "https://esm.sh/exifr@7";
 
 let root = null;
+let modalEl = null;   // add-memory form  (moved to <body>)
+let detailEl = null;  // memory lightbox  (moved to <body>)
 let memories = [];
 let mode = "scrapbook";
 
 export async function initTimeline(container) {
   root = container;
   root.innerHTML = shell();
+  // Move the overlays out to <body> so their position:fixed is relative to the
+  // viewport, not trapped by any transformed/animated ancestor in the app shell.
+  modalEl  = root.querySelector(".tl-modal");
+  detailEl = root.querySelector(".tl-detail");
+  document.body.appendChild(modalEl);
+  document.body.appendChild(detailEl);
   wire();
   await load();
 }
@@ -37,13 +45,13 @@ async function load() {
 /* suggest places already used, so we don't fragment "Paris" / "Paris, FR" */
 function refreshPlaceOptions() {
   const places = [...new Set(memories.map((m) => (m.place || "").trim()).filter(Boolean))].sort();
-  const dl = root.querySelector("#place-options");
+  const dl = modalEl.querySelector("#place-options");
   if (dl) dl.innerHTML = places.map((p) => `<option value="${esc(p)}"></option>`).join("");
 }
 
 /* auto-fill the date from the first photo's EXIF "date taken" (if blank) */
 async function onPhotoPicked(e) {
-  const dateInput = root.querySelector('input[name="date"]');
+  const dateInput = modalEl.querySelector('input[name="date"]');
   if (dateInput.value) return;                 // don't clobber a typed date
   const file = e.target.files && e.target.files[0];
   if (!file) return;
@@ -243,16 +251,15 @@ function sparkle(x, y) {
 async function openMemory(id) {
   const m = memories.find((x) => x.id === id);
   if (!m) return;
-  const modal = root.querySelector(".tl-detail");
-  modal.querySelector(".detail-title").textContent = m.title;
-  modal.querySelector(".detail-meta").textContent =
+  detailEl.querySelector(".detail-title").textContent = m.title;
+  detailEl.querySelector(".detail-meta").textContent =
     fmtDate(m.event_date) + (m.place ? ` · ${m.place}` : "");
-  modal.querySelector(".detail-note").textContent = m.note || "";
-  const strip = modal.querySelector(".detail-photos");
+  detailEl.querySelector(".detail-note").textContent = m.note || "";
+  const strip = detailEl.querySelector(".detail-photos");
 
   const photos = photosOf(m);
   strip.innerHTML = photos.length ? `<span class="po-loading">🐾</span>` : "";
-  modal.hidden = false;
+  detailEl.hidden = false;
 
   if (photos.length) {
     const { data } = await supabase.storage.from("memories").createSignedUrls(photos, 3600);
@@ -265,31 +272,30 @@ async function openMemory(id) {
 /* ---------- wiring ---------- */
 function wire() {
   root.querySelector(".tl-add").addEventListener("click", openForm);
-  root.querySelector(".tl-cancel").addEventListener("click", closeForm);
-  root.querySelector(".tl-modal").addEventListener("click", (e) => {
+  modalEl.querySelector(".tl-cancel").addEventListener("click", closeForm);
+  modalEl.addEventListener("click", (e) => {
     if (e.target.classList.contains("tl-modal")) closeForm();
   });
-  root.querySelector(".tl-form").addEventListener("submit", (e) => {
+  modalEl.querySelector(".tl-form").addEventListener("submit", (e) => {
     e.preventDefault();
     addMemory(e.currentTarget);
   });
-  root.querySelector('input[name="photo"]').addEventListener("change", onPhotoPicked);
+  modalEl.querySelector('input[name="photo"]').addEventListener("change", onPhotoPicked);
   root.querySelector(".tl-toggle").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) { mode = b.dataset.mode; render(); }
   });
-  const detail = root.querySelector(".tl-detail");
-  detail.addEventListener("click", (e) => {
+  detailEl.addEventListener("click", (e) => {
     if (e.target.classList.contains("tl-detail") || e.target.classList.contains("detail-close"))
-      detail.hidden = true;
+      detailEl.hidden = true;
   });
 }
 
-function openForm()  { root.querySelector(".tl-modal").hidden = false; }
-function closeForm() { root.querySelector(".tl-modal").hidden = true; root.querySelector(".tl-form").reset(); }
+function openForm()  { modalEl.hidden = false; }
+function closeForm() { modalEl.hidden = true; modalEl.querySelector(".tl-form").reset(); }
 function setStatus(t){ root.querySelector(".tl-status").textContent = t; }
 function setSaving(on) {
-  const btn = root.querySelector(".tl-save");
+  const btn = modalEl.querySelector(".tl-save");
   btn.disabled = on;
   btn.textContent = on ? "saving…" : "save it 🤍";
 }
