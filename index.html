@@ -64,16 +64,32 @@
                 </feComponentTransfer>
                 <feComposite in="SourceGraphic" in2="m" operator="in"/>
               </filter>
+              <filter id="furBeige" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="23" result="n"/>
+                <feComponentTransfer in="n" result="m">
+                  <feFuncA type="discrete" tableValues="0 0 0 0 1 1"/>
+                </feComponentTransfer>
+                <feComposite in="SourceGraphic" in2="m" operator="in"/>
+              </filter>
+              <filter id="furWhite" x="0%" y="0%" width="100%" height="100%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="31" result="n"/>
+                <feComponentTransfer in="n" result="m">
+                  <feFuncA type="discrete" tableValues="0 0 0 0 0 0 1"/>
+                </feComponentTransfer>
+                <feComposite in="SourceGraphic" in2="m" operator="in"/>
+              </filter>
             </defs>
             <g stroke="#241f1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
               <!-- tail (black) -->
               <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#322b27"/>
               <!-- body base (black) -->
               <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#322b27"/>
-              <!-- tortoiseshell coat: two noise-textured layers over the black -->
+              <!-- tortoiseshell coat: noise-textured layers over the black base -->
               <g clip-path="url(#lionBody)" stroke="none">
                 <rect x="8" y="20" width="120" height="80" fill="#6e4327" filter="url(#furBrown)"/>
                 <rect x="8" y="20" width="120" height="80" fill="#b9794a" filter="url(#furTan)"/>
+                <rect x="8" y="20" width="120" height="80" fill="#d6bd95" filter="url(#furBeige)"/>
+                <rect x="8" y="20" width="120" height="80" fill="#f4eee2" filter="url(#furWhite)"/>
               </g>
               <!-- ears (dark, to match her face) -->
               <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
