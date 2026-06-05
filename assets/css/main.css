@@ -150,7 +150,7 @@ body {
 }
 .cat { width: clamp(96px, 26vw, 130px); height: auto; }
 .cat--lion { transform: rotate(4deg)  translateY(2px); }
-.cat--mimi { transform: rotate(-4deg) scaleX(-1); margin-left: -14px; }
+.cat--mimi { transform: rotate(-4deg) scaleX(-1); margin-left: -2px; }
 
 .zzz {
   position: absolute; top: -6px; right: 22%;
