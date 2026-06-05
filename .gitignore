@@ -1,0 +1,13 @@
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
+
+# local preview server logs
+*.log
+
+# secrets — never commit these (Supabase service keys, etc.)
+.env
+.env.*

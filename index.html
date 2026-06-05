@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>you are my world</title>
+  <meta name="description" content="a little corner of the internet, just for us" />
+
+  <!-- cat in the browser tab -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%88%3C/text%3E%3C/svg%3E" />
+
+  <!-- nice preview when the link is shared / found -->
+  <meta property="og:title" content="you are my world" />
+  <meta property="og:description" content="a little corner of the internet, just for us 🐈🐈‍⬛" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#c8785b" />
+  <meta name="robots" content="noindex" /><!-- keep us off Google search -->
+
+
+  <!-- Fonts: Fraunces (warm printed serif) + Caveat (handwriting). Mixing the two
+       is what keeps this from looking like a generic template. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/main.css" />
+</head>
+<body>
+  <!-- subtle paper grain laid over everything -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <main class="stage">
+
+    <!-- ============ SCREEN 1: the countdown (public) ============ -->
+    <section id="screen-countdown" class="screen is-active">
+      <div class="journal" >
+        <span class="tape tape--tl" aria-hidden="true"></span>
+        <span class="tape tape--br" aria-hidden="true"></span>
+
+        <p class="kicker">a little countdown, just for us</p>
+        <h1 class="title">you are my&nbsp;world</h1>
+
+        <!-- the two cats, curled up asleep while we wait -->
+        <div class="cats" aria-hidden="true">
+          <!-- Lion: orange tabby — pointy ears + stripes -->
+          <svg class="cat cat--lion" viewBox="0 0 130 100" role="img" aria-label="Lion the cat, sleeping">
+            <g stroke="#7a4a2b" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#d98b5f"/>
+              <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#d98b5f"/>
+              <path d="M34 47 l-7 -21 l20 12 z" fill="#d98b5f"/>
+              <path d="M54 41 l9 -20 l11 18 z" fill="#d98b5f"/>
+              <g fill="none" stroke="#b5663a" stroke-width="2.1">
+                <path d="M42 46 q3 7 1 14"/>
+                <path d="M56 46 q2 7 0 14"/>
+                <path d="M70 50 q2 6 0 12"/>
+                <path d="M28 62 q9 3 18 1"/>
+              </g>
+              <g fill="none" stroke="#7a4a2b" stroke-width="2">
+                <path d="M28 66 q6 4 12 0"/>
+                <path d="M44 69 q1.5 2 3 0"/>
+              </g>
+            </g>
+          </svg>
+          <!-- Mimi: British shorthair — chunky, round, small ears, blue-grey -->
+          <svg class="cat cat--mimi" viewBox="0 0 130 100" role="img" aria-label="Mimi the cat, sleeping">
+            <g stroke="#43464d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#b6bdc7"/>
+              <path d="M12 80 q-2 -47 42 -51 q49 -4 64 22 q12 21 -8 37 q-52 14 -98 -8 z" fill="#b6bdc7"/>
+              <path d="M36 43 q-4 -15 8 -16 q9 1 7 14 z" fill="#b6bdc7"/>
+              <path d="M58 39 q1 -14 12 -13 q9 2 5 16 z" fill="#b6bdc7"/>
+              <g fill="none" stroke="#43464d" stroke-width="2">
+                <path d="M28 62 q6 4 12 0"/>
+                <path d="M44 65 q1.5 2 3 0"/>
+              </g>
+            </g>
+          </svg>
+          <span class="zzz">z &nbsp;z &nbsp;z</span>
+        </div>
+
+        <!-- the live countdown -->
+        <div id="countdown" class="countdown" role="timer" aria-live="off">
+          <div class="unit"><span class="num" data-days>--</span><span class="lbl">days</span></div>
+          <div class="unit"><span class="num" data-hours>--</span><span class="lbl">hours</span></div>
+          <div class="unit"><span class="num" data-mins>--</span><span class="lbl">minutes</span></div>
+          <div class="unit"><span class="num" data-secs>--</span><span class="lbl">seconds</span></div>
+        </div>
+
+        <p class="until">until <strong>we</strong> are together again</p>
+        <p class="doodle-heart" aria-hidden="true">♡</p>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 2: the reunion / congrats ============ -->
+    <section id="screen-congrats" class="screen">
+      <div class="journal journal--joy">
+        <div class="cats cats--awake" aria-hidden="true">
+          <span class="bounce">🐈</span><span class="bounce">🐈‍⬛</span>
+        </div>
+        <h1 class="title">you made it.</h1>
+        <p class="kicker big">no more counting. go hug each&nbsp;other.</p>
+        <button id="enter-btn" class="btn">open our world →</button>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 3: the password gate ============ -->
+    <section id="screen-gate" class="screen">
+      <div class="journal journal--small">
+        <p class="kicker">just between us two</p>
+        <h2 class="title title--sm">what's the magic word?</h2>
+        <form id="gate-form" class="gate-form">
+          <input id="gate-input" type="password" autocomplete="off" placeholder="our password" aria-label="password" />
+          <button class="btn" type="submit">unlock</button>
+        </form>
+        <p id="gate-error" class="gate-error" hidden>hmm, not quite. try again 🐾</p>
+      </div>
+    </section>
+
+    <!-- ============ SCREEN 4: the app (placeholder for now) ============ -->
+    <section id="screen-app" class="screen">
+      <div class="journal">
+        <h2 class="title title--sm">our scrapbook is being built 🪡</h2>
+        <p class="kicker">this is where the timeline, the map, Mimi &amp; Lion's moods,
+          the constellation, and everything else will live.</p>
+        <p class="until">coming together, page by page.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
