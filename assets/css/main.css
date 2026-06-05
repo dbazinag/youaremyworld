@@ -462,9 +462,11 @@ body {
   box-shadow: var(--shadow); transform: rotate(var(--rot)); position: relative;
 }
 .po-tape {
-  position: absolute; top: -9px; left: 50%;
-  transform: translateX(-50%) rotate(-3deg);
-  width: 60px; height: 20px; background: var(--tape);
+  position: absolute; top: -9px; left: var(--tl, 50%);
+  transform: translateX(-50%) rotate(var(--tr, -3deg));
+  width: var(--tw, 60px); height: 20px;
+  background: var(--tb, var(--tape));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
 }
 .po-photo {
   width: 100%; aspect-ratio: 1 / 1; border-radius: 2px;
@@ -557,19 +559,27 @@ body {
 .tl-detail[hidden] { display: none; }
 .detail-card {
   position: relative; background: linear-gradient(#fffaf0, #f7eeda);
-  border-radius: 16px; box-shadow: var(--shadow); padding: 20px;
+  border-radius: 16px; box-shadow: var(--shadow); padding: 46px 20px 20px;
   max-width: 460px; width: 100%; max-height: 86vh; overflow-y: auto;
   text-align: center; border: 1px solid rgba(168,92,65,0.14);
 }
 .detail-close {
-  position: absolute; top: 8px; right: 12px; background: none; border: none;
-  font-size: 1.6rem; line-height: 1; color: var(--ink-soft); cursor: pointer;
+  position: absolute; top: 10px; right: 12px; z-index: 2;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--paper); border: 1px solid rgba(168,92,65,0.2);
+  font-size: 1.3rem; line-height: 1; color: var(--ink-soft); cursor: pointer;
+  box-shadow: 0 2px 4px rgba(59,51,44,0.12);
 }
-.detail-close:hover { color: var(--terracotta-deep); }
+.detail-close:hover { color: var(--terracotta-deep); background: #fff4e2; }
 .detail-photos {
-  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px;
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
   scroll-snap-type: x mandatory; margin-bottom: 10px;
+  scrollbar-width: thin; scrollbar-color: var(--terracotta) rgba(168,92,65,0.12);
 }
+.detail-photos::-webkit-scrollbar { height: 8px; }
+.detail-photos::-webkit-scrollbar-track { background: rgba(168,92,65,0.12); border-radius: 999px; }
+.detail-photos::-webkit-scrollbar-thumb { background: var(--terracotta); border-radius: 999px; }
+.detail-photos::-webkit-scrollbar-thumb:hover { background: var(--terracotta-deep); }
 .detail-photos:empty { margin: 0; }
 .detail-photos img {
   height: 240px; border-radius: 8px; scroll-snap-align: center; flex: 0 0 auto;

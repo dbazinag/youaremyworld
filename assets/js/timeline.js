@@ -146,7 +146,7 @@ function polaroid(m) {
     : `<div class="po-photo po-nophoto">🤍</div>`;
   const place = m.place ? `<span class="po-place">✦ ${esc(m.place)}</span>` : "";
   return `
-  <figure class="polaroid" data-id="${m.id}" style="--rot:${rot(m.id)}deg">
+  <figure class="polaroid" data-id="${m.id}" style="${vary(m.id)}">
     <span class="po-tape" aria-hidden="true"></span>
     ${photo}
     <figcaption>
@@ -303,10 +303,20 @@ function esc(s) {
   return String(s).replace(/[&<>"']/g, (c) =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
-function rot(id) {
+/* deterministic per-memory styling so each polaroid looks hand-placed */
+function vary(id) {
   let h = 0;
-  for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 9;
-  return ((h - 4) * 0.8).toFixed(2);
+  for (const c of String(id)) h = (h * 131 + c.charCodeAt(0)) >>> 0;
+  const r = (s) => (((h >>> s) % 1000) / 1000);
+  const rot = (r(0) * 8 - 4).toFixed(2);     // -4..4 deg slant
+  const tl  = (22 + r(3) * 46).toFixed(0);   // tape 22%..68% across
+  const tr  = (r(7) * 26 - 13).toFixed(1);   // tape -13..13 deg
+  const tw  = (46 + r(11) * 26).toFixed(0);  // tape 46..72px wide
+  const tapes = [
+    "rgba(224,196,138,0.55)", "rgba(200,120,91,0.42)",
+    "rgba(138,154,123,0.42)", "rgba(227,166,146,0.48)",
+  ];
+  return `--rot:${rot}deg;--tl:${tl}%;--tr:${tr}deg;--tw:${tw}px;--tb:${tapes[h % tapes.length]};`;
 }
 function mulberry32(a) {
   return function () {
