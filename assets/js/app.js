@@ -6,10 +6,12 @@
 
 import { initRoom } from "./room.js";
 import { initTimeline } from "./timeline.js";
+import { initMap } from "./map.js";
 
 const VIEWS = [
   { key: "room",     label: "our room",     init: initRoom },
   { key: "timeline", label: "our timeline", init: initTimeline },
+  { key: "map",      label: "our map",      init: initMap },
 ];
 
 let built = false;

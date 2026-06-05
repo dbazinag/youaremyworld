@@ -589,6 +589,47 @@ body {
 .detail-meta { display: block; font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
 .detail-note { font-size: 0.95rem; color: var(--ink-soft); font-style: italic; margin: 8px 0 0; }
 
+/* ============ map ============ */
+.map .map-status { color: var(--terracotta-deep); font-size: 0.9rem; min-height: 1.1em; }
+.map-canvas {
+  height: 380px; margin-top: 10px; border-radius: 14px; overflow: hidden;
+  border: 2px solid rgba(168,92,65,0.2); background: #dfe7ec;
+}
+.cozy-map .leaflet-tile { filter: sepia(0.22) saturate(0.92) brightness(1.03) hue-rotate(-6deg); }
+.leaflet-popup-content strong { font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--ink); }
+
+.pin {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 50%; font-size: 0.95rem;
+  color: #fff; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(59,51,44,0.35);
+}
+.pin--been { background: var(--terracotta); }
+.pin--wish { background: var(--sage); }
+.pin--home { background: var(--ink); }
+
+.map-lists { display: flex; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+.map-col { flex: 1; min-width: 180px; }
+.map-h { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--terracotta-deep); margin: 0 0 6px; }
+.been-list, .wish-list { list-style: none; padding: 0; margin: 0; }
+.been-list li, .wish-list li { display: flex; align-items: center; gap: 6px; padding: 2px 0; }
+.place-go {
+  flex: 1; text-align: left; background: none; border: none; cursor: pointer;
+  font-family: "Fraunces", serif; font-size: 0.95rem; color: var(--ink);
+  padding: 3px 5px; border-radius: 6px;
+}
+.place-go:hover { background: rgba(200,120,91,0.1); color: var(--terracotta-deep); }
+.place-meta { font-size: 0.8rem; color: var(--ink-soft); min-width: 1.5em; text-align: right; }
+.place-del { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 1.2rem; line-height: 1; }
+.place-del:hover { color: var(--terracotta-deep); }
+.map-lists .muted { color: var(--ink-soft); font-style: italic; font-size: 0.9rem; padding: 3px 5px; }
+.wish-form { display: flex; gap: 6px; margin-top: 8px; }
+.wish-form input {
+  flex: 1; font-family: "Fraunces", serif; font-size: 0.95rem; padding: 0.4em 0.6em;
+  border-radius: 8px; border: 1px solid rgba(168,92,65,0.3); background: var(--paper); color: var(--ink);
+}
+.wish-form input:focus { outline: 2px solid var(--terracotta); outline-offset: 1px; }
+.wish-form .btn { margin-top: 0 !important; font-size: 1rem !important; padding: 0.32em 0.8em !important; }
+
 @media (prefers-reduced-motion: reduce) {
   *, .screen.is-active { animation: none !important; }
 }
