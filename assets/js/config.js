@@ -9,9 +9,16 @@ export const CONFIG = {
   // June 18, 2026, 6:00 PM in Barrie (Eastern, EDT = -04:00):
   reunionISO: "2026-06-18T18:00:00-04:00",
 
-  // Temporary front-end-only password (Phase 1). NOT secure — replaced by
-  // the real shared Supabase login soon. Change it to whatever you like for now.
-  placeholderPassword: "mimi+lion",
+  // Supabase backend. The publishable key is meant to be public — your data is
+  // protected by access rules (RLS), not by hiding this key.
+  supabase: {
+    url: "https://wknpwvyfbgbbwhwsnors.supabase.co",
+    publishableKey: "sb_publishable_DZCvNzOB59nXe9a-I5KXmg_NrAfPOWi",
+    // The single shared account you BOTH log into. Create a user with EXACTLY
+    // this email in Supabase (Authentication -> Users -> Add user), and whatever
+    // password you set there becomes your shared "magic word".
+    sharedEmail: "us@youaremyworld.love",
+  },
 
   // Defaults until the editable settings page (backed by Supabase) exists.
   people: {

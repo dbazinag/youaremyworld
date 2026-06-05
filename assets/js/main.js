@@ -4,6 +4,7 @@
    ========================================================= */
 
 import { CONFIG } from "./config.js";
+import { supabase } from "./supabase.js";
 
 /* ---------- tiny helpers ---------- */
 const $ = (sel) => document.querySelector(sel);
@@ -60,28 +61,48 @@ function startCountdown() {
   ticker = setInterval(tick, 1000);
 }
 
-/* ---------- gate (TEMPORARY placeholder) ----------
-   This is NOT real security yet — it's a stand-in so the flow is walkable.
-   Real protection arrives with Supabase auth (the shared login). Don't put
-   anything truly private behind this until then. */
+/* ---------- the real shared login (Supabase) ----------
+   You both sign into ONE shared account. The "magic word" is that account's
+   password; only people who know it get an authenticated session, and the
+   data is locked to authenticated users via row-level security. */
+async function enterPrivate() {
+  const { data } = await supabase.auth.getSession();
+  show(data.session ? "app" : "gate");   // already logged in? skip the gate
+}
+
 function wireGate() {
   const form  = $("#gate-form");
   const input = $("#gate-input");
   const error = $("#gate-error");
+  const btn   = form.querySelector("button");
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (input.value.trim().toLowerCase() === CONFIG.placeholderPassword) {
-      show("app");
-    } else {
+    error.hidden = true;
+    btn.disabled = true;
+    btn.textContent = "unlocking…";
+
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email: CONFIG.supabase.sharedEmail,
+      password: input.value,
+    });
+
+    btn.disabled = false;
+    btn.textContent = "unlock";
+
+    if (authError) {
       error.hidden = false;
       input.select();
+    } else {
+      show("app");
     }
   });
 }
 
 /* ---------- boot ---------- */
-$("#enter-btn").addEventListener("click", () => show("gate"));
+// "open our world" (after the countdown) and the discreet always-there link
+$("#enter-btn").addEventListener("click", enterPrivate);
+$("#peek-link").addEventListener("click", (e) => { e.preventDefault(); enterPrivate(); });
 wireGate();
 
 if (target - Date.now() <= 0) {
