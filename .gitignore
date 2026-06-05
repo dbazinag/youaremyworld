@@ -11,3 +11,7 @@ Thumbs.db
 # secrets — never commit these (Supabase service keys, etc.)
 .env
 .env.*
+
+# kept local on purpose — surprise/handoff notes, must NOT reach GitHub
+handover.md
+README.md
