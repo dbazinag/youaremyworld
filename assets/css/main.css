@@ -316,6 +316,7 @@ body {
   display: flex; align-items: center; justify-content: center;
   padding: 20px; animation: fade-up 0.25s ease both;
 }
+.mood-modal[hidden] { display: none; }  /* actually hide it until a cat is tapped */
 .mood-card {
   background: linear-gradient(#fffaf0, #f7eeda);
   border-radius: 16px; box-shadow: var(--shadow);
