@@ -14,6 +14,7 @@ const MOODS = [
   { key: "lovey",    emoji: "🥰",  label: "lovey" },
   { key: "happy",    emoji: "😺",  label: "happy" },
   { key: "missing",  emoji: "🥺",  label: "missing you" },
+  { key: "sad",      emoji: "😢",  label: "sad" },
   { key: "sleepy",   emoji: "😴",  label: "sleepy" },
   { key: "grumpy",   emoji: "😾",  label: "grumpy" },
   { key: "stressed", emoji: "😰",  label: "stressed" },
@@ -145,6 +146,10 @@ function moodFace(cat, mood) {
            + dot(EX2, 3.6, 4.4) + `<circle cx="${EX2 + 1.2}" cy="${ey - 1.6}" r="1.1" fill="#fff"/>`
            + line(`M${MX - 3} ${my} q1.5 2 3 0 q1.5 -2 3 0`, 2)
            + `<path d="M${EX1 - 3} ${ey + 4} q-2 5 0 6 q2 -1 0 -6 z" fill="#8fc0e0"/>`;
+    case "sad":
+      return line(`M${EX1 - 5} ${ey - 2} q5 4 10 -1`) + line(`M${EX2 - 5} ${ey - 2} q5 4 10 -1`)
+           + line(`M${MX - 4} ${my + 1} q4 -3 8 0`, 2)
+           + `<path d="M${EX1 - 2} ${ey + 4} q-2 5 0 6 q2 -1 0 -6 z" fill="#8fc0e0"/>`;
     case "grumpy":
       return line(`M${EX1 - 5} ${ey - 3} L${EX1 + 5} ${ey + 1}`, 2.4)
            + line(`M${EX2 - 5} ${ey + 1} L${EX2 + 5} ${ey - 3}`, 2.4)
