@@ -1,8 +1,8 @@
 /* =========================================================
    The timeline / scrapbook — our memories.
-   Two views of the same data:
-     • Scrapbook  — tilted polaroids on paper
-     • Constellation — memories as connected stars
+     • Scrapbook    — tilted polaroids (multiple photos each)
+     • Constellation — memories grouped by place into little
+                       clusters of connected stars in a starry sky
    Photos live in a private Supabase Storage bucket ("memories")
    and are shown via short-lived signed URLs.
    ========================================================= */
@@ -32,29 +32,35 @@ async function load() {
   render();
 }
 
+function photosOf(m) {
+  if (m.photo_paths && m.photo_paths.length) return m.photo_paths;
+  return m.photo_path ? [m.photo_path] : [];          // legacy single-photo rows
+}
+
 async function addMemory(form) {
   const fd = new FormData(form);
   const title = (fd.get("title") || "").toString().trim();
   const date  = fd.get("date");
   const note  = (fd.get("note") || "").toString().trim() || null;
-  const file  = fd.get("photo");
+  const place = (fd.get("place") || "").toString().trim() || null;
+  const files = fd.getAll("photo").filter((f) => f && f.size);
   if (!title || !date) return;
 
   setSaving(true);
-  let photo_path = null;
-
-  if (file && file.size) {
+  const photo_paths = [];
+  for (const file of files) {
     if (file.size > 10 * 1024 * 1024) {
-      setStatus("that photo's a bit big (max 10MB) 🐾"); setSaving(false); return;
+      setStatus(`"${file.name}" is over 10MB — skip or shrink it 🐾`); setSaving(false); return;
     }
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    photo_path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { error: upErr } = await supabase.storage.from("memories").upload(photo_path, file);
+    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("memories").upload(path, file);
     if (upErr) { setStatus("photo upload failed 😿 — " + upErr.message); setSaving(false); return; }
+    photo_paths.push(path);
   }
 
   const { error } = await supabase.from("memories")
-    .insert({ title, note, event_date: date, photo_path });
+    .insert({ title, note, event_date: date, place, photo_paths });
 
   setSaving(false);
   if (error) { setStatus("couldn't save 😿 — " + error.message); return; }
@@ -64,7 +70,6 @@ async function addMemory(form) {
   await load();
 }
 
-/* signed URL for a private photo (1h) */
 async function signed(path) {
   const { data } = await supabase.storage.from("memories").createSignedUrl(path, 3600);
   return data ? data.signedUrl : null;
@@ -87,80 +92,144 @@ function render() {
 
 function renderScrapbook(view) {
   view.innerHTML = `<div class="scrapbook">${memories.map(polaroid).join("")}</div>`;
+  view.querySelectorAll(".polaroid").forEach((el) =>
+    el.addEventListener("click", () => openMemory(el.dataset.id)));
+
   memories.forEach(async (m) => {
-    if (!m.photo_path) return;
-    const url = await signed(m.photo_path);
+    const photos = photosOf(m);
+    if (!photos.length) return;
+    const url = await signed(photos[0]);
     const holder = view.querySelector(`.po-photo[data-id="${m.id}"]`);
     if (url && holder) {
       holder.style.backgroundImage = `url("${url}")`;
       holder.classList.add("loaded");
-      holder.innerHTML = "";
+      holder.querySelector(".po-loading")?.remove();
     }
   });
 }
 
 function polaroid(m) {
-  const dateStr = fmtDate(m.event_date);
-  const note = m.note ? `<p class="po-note">${esc(m.note)}</p>` : "";
-  const photo = m.photo_path
-    ? `<div class="po-photo" data-id="${m.id}"><span class="po-loading">🐾</span></div>`
+  const photos = photosOf(m);
+  const more = photos.length > 1 ? `<span class="po-count">+${photos.length - 1}</span>` : "";
+  const photo = photos.length
+    ? `<div class="po-photo" data-id="${m.id}"><span class="po-loading">🐾</span>${more}</div>`
     : `<div class="po-photo po-nophoto">🤍</div>`;
+  const place = m.place ? `<span class="po-place">✦ ${esc(m.place)}</span>` : "";
   return `
-  <figure class="polaroid" style="--rot:${rot(m.id)}deg">
+  <figure class="polaroid" data-id="${m.id}" style="--rot:${rot(m.id)}deg">
     <span class="po-tape" aria-hidden="true"></span>
     ${photo}
     <figcaption>
       <span class="po-title">${esc(m.title)}</span>
-      <span class="po-date">${dateStr}</span>
-      ${note}
+      <span class="po-date">${fmtDate(m.event_date)}</span>
+      ${place}
     </figcaption>
   </figure>`;
 }
 
+/* ---------- constellation ---------- */
 function renderConstellation(view) {
-  const W = 820, H = 460, n = memories.length;
-  const pts = memories.map((m, i) => ({
-    x: 70 + (W - 140) * (n === 1 ? 0.5 : i / (n - 1)),
-    y: H / 2 + Math.sin(i * 1.7 + 0.5) * (H / 2 - 90),
-    m,
-  }));
-  const path = pts.map((p, i) => (i ? "L" : "M") + p.x.toFixed(0) + " " + p.y.toFixed(0)).join(" ");
-  const stars = pts.map((p) => `
-    <g class="cstar" data-id="${p.m.id}" transform="translate(${p.x.toFixed(0)},${p.y.toFixed(0)})">
-      <circle r="16" fill="transparent"/>
-      <path class="star-shape" d="M0 -8 L2.2 -2.4 L8 -2.4 L3.4 1.6 L5.2 7.4 L0 3.8 L-5.2 7.4 L-3.4 1.6 L-8 -2.4 L-2.2 -2.4 Z"/>
-    </g>`).join("");
+  const W = 820, H = 500;
+  const rnd = mulberry32(20260606);
+
+  // ambient sky: scattered dim stars + a few sparkles
+  let deco = "";
+  for (let i = 0; i < 60; i++) {
+    deco += `<circle cx="${(rnd() * W).toFixed(0)}" cy="${(rnd() * H).toFixed(0)}" r="${(0.5 + rnd() * 1.7).toFixed(1)}" fill="#cdd6f0" opacity="${(0.25 + rnd() * 0.5).toFixed(2)}"/>`;
+  }
+  for (let i = 0; i < 7; i++) deco += sparkle(rnd() * W, rnd() * H);
+
+  // group memories by place (ungrouped share one quiet cluster)
+  const groups = {};
+  for (const m of memories) {
+    const key = (m.place || "").trim() || "·";
+    (groups[key] ||= []).push(m);
+  }
+  const keys = Object.keys(groups);
+  const anchors = anchorsFor(keys.length, W, H, rnd);
+
+  let lines = "", stars = "", labels = "";
+  keys.forEach((key, gi) => {
+    const items = groups[key];
+    const a = anchors[gi];
+    const pts = items.map((m, j) => {
+      const ang = (j / Math.max(1, items.length)) * Math.PI * 2 + gi * 1.3;
+      const rad = items.length === 1 ? 0 : 24 + (j % 3) * 15;
+      return {
+        x: a.x + Math.cos(ang) * rad + (rnd() - 0.5) * 12,
+        y: a.y + Math.sin(ang) * rad * 0.8 + (rnd() - 0.5) * 12,
+        m,
+      };
+    });
+    if (pts.length > 1) {
+      const d = pts.map((p, i) => (i ? "L" : "M") + p.x.toFixed(0) + " " + p.y.toFixed(0)).join(" ");
+      lines += `<path d="${d}" class="cline"/>`;
+    }
+    pts.forEach((p) => {
+      stars += `<g class="cstar" data-id="${p.m.id}" transform="translate(${p.x.toFixed(0)},${p.y.toFixed(0)})">
+          <circle r="15" fill="transparent"/>
+          <path class="star-shape" d="M0 -7 L2 -2.2 L7 -2.2 L3 1.4 L4.6 6.6 L0 3.4 L-4.6 6.6 L-3 1.4 L-7 -2.2 L-2 -2.2 Z"/>
+        </g>`;
+    });
+    if (key !== "·") {
+      const ly = Math.max(...pts.map((p) => p.y)) + 20;
+      labels += `<text x="${a.x.toFixed(0)}" y="${ly.toFixed(0)}" class="clabel">${esc(key)}</text>`;
+    }
+  });
 
   view.innerHTML = `
     <div class="sky-wrap">
       <svg viewBox="0 0 ${W} ${H}" class="sky-svg" preserveAspectRatio="xMidYMid meet">
-        <path d="${path}" fill="none" stroke="rgba(246,231,176,0.4)" stroke-width="1.5" stroke-dasharray="3 5"/>
-        ${stars}
+        ${deco}${lines}${labels}${stars}
       </svg>
-      <div class="star-pop" hidden></div>
     </div>
-    <p class="sky-hint">tap a star ✦</p>`;
+    <p class="sky-hint">tap a star ✦ — your places, drawn in the sky</p>`;
 
   view.querySelectorAll(".cstar").forEach((s) =>
-    s.addEventListener("click", () => showStar(s.dataset.id)));
-  view.querySelector(".sky-svg").addEventListener("click", (e) => {
-    if (!e.target.closest(".cstar")) view.querySelector(".star-pop").hidden = true;
-  });
+    s.addEventListener("click", () => openMemory(s.dataset.id)));
 }
 
-async function showStar(id) {
+/* spread cluster centres across the sky on a loose jittered grid */
+function anchorsFor(n, W, H, rnd) {
+  const cols = Math.ceil(Math.sqrt(n));
+  const rows = Math.ceil(n / cols);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const c = i % cols, r = Math.floor(i / cols);
+    out.push({
+      x: W * ((c + 0.5) / cols) + (rnd() - 0.5) * (W / cols) * 0.4,
+      y: H * ((r + 0.5) / rows) + (rnd() - 0.5) * (H / rows) * 0.4,
+    });
+  }
+  return out;
+}
+
+function sparkle(x, y) {
+  const p = (n) => n.toFixed(1);
+  return `<path d="M${p(x)} ${p(y - 6)} L${p(x + 1.3)} ${p(y - 1.3)} L${p(x + 6)} ${p(y)} L${p(x + 1.3)} ${p(y + 1.3)} L${p(x)} ${p(y + 6)} L${p(x - 1.3)} ${p(y + 1.3)} L${p(x - 6)} ${p(y)} L${p(x - 1.3)} ${p(y - 1.3)} Z" fill="#eaf0ff" opacity="0.85"/>`;
+}
+
+/* ---------- memory detail (shared by both views) ---------- */
+async function openMemory(id) {
   const m = memories.find((x) => x.id === id);
   if (!m) return;
-  const pop = root.querySelector(".star-pop");
-  let img = "";
-  if (m.photo_path) {
-    const url = await signed(m.photo_path);
-    if (url) img = `<img src="${url}" alt="" />`;
+  const modal = root.querySelector(".tl-detail");
+  modal.querySelector(".detail-title").textContent = m.title;
+  modal.querySelector(".detail-meta").textContent =
+    fmtDate(m.event_date) + (m.place ? ` · ${m.place}` : "");
+  modal.querySelector(".detail-note").textContent = m.note || "";
+  const strip = modal.querySelector(".detail-photos");
+
+  const photos = photosOf(m);
+  strip.innerHTML = photos.length ? `<span class="po-loading">🐾</span>` : "";
+  modal.hidden = false;
+
+  if (photos.length) {
+    const { data } = await supabase.storage.from("memories").createSignedUrls(photos, 3600);
+    strip.innerHTML = (data || [])
+      .map((d) => d.signedUrl ? `<img src="${d.signedUrl}" alt="" />` : "")
+      .join("");
   }
-  pop.innerHTML = `${img}<strong>${esc(m.title)}</strong>
-    <span class="pop-date">${fmtDate(m.event_date)}</span>
-    ${m.note ? `<p>${esc(m.note)}</p>` : ""}`;
-  pop.hidden = false;
 }
 
 /* ---------- wiring ---------- */
@@ -177,6 +246,11 @@ function wire() {
   root.querySelector(".tl-toggle").addEventListener("click", (e) => {
     const b = e.target.closest("button");
     if (b) { mode = b.dataset.mode; render(); }
+  });
+  const detail = root.querySelector(".tl-detail");
+  detail.addEventListener("click", (e) => {
+    if (e.target.classList.contains("tl-detail") || e.target.classList.contains("detail-close"))
+      detail.hidden = true;
   });
 }
 
@@ -202,6 +276,14 @@ function rot(id) {
   let h = 0;
   for (const c of String(id)) h = (h * 31 + c.charCodeAt(0)) % 9;
   return ((h - 4) * 0.8).toFixed(2);
+}
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 /* ---------- markup ---------- */
@@ -232,16 +314,29 @@ function shell() {
       <label>when?
         <input name="date" type="date" required />
       </label>
-      <label>a little note <span class="opt">(optional)</span>
-        <textarea name="note" maxlength="500" rows="2" placeholder="something to remember about it…"></textarea>
+      <label>where? <span class="opt">(optional — groups it in the sky)</span>
+        <input name="place" maxlength="40" placeholder="Lausanne, our Paris trip…" />
       </label>
-      <label>a photo <span class="opt">(optional)</span>
-        <input name="photo" type="file" accept="image/*" />
+      <label>a little note <span class="opt">(optional)</span>
+        <textarea name="note" maxlength="500" rows="2" placeholder="something to remember…"></textarea>
+      </label>
+      <label>photos <span class="opt">(optional — you can pick several)</span>
+        <input name="photo" type="file" accept="image/*" multiple />
       </label>
       <div class="tl-form-actions">
         <button type="button" class="tl-cancel">never mind</button>
         <button type="submit" class="btn tl-save">save it 🤍</button>
       </div>
     </form>
+  </div>
+
+  <div class="tl-detail" hidden>
+    <div class="detail-card">
+      <button class="detail-close" aria-label="close">×</button>
+      <div class="detail-photos"></div>
+      <strong class="detail-title"></strong>
+      <span class="detail-meta"></span>
+      <p class="detail-note"></p>
+    </div>
   </div>`;
 }
