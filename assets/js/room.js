@@ -26,7 +26,7 @@ const state  = { lion: null, mimi: null }; // each: { cat, mood, updated_at }
 
 // face geometry per cat (eye line / mouth line / stroke colour)
 const FACE = {
-  lion: { ey: 64, my: 72, sc: "#efe2c8" },
+  lion: { ey: 64, my: 72, sc: "#2e241c" }, // dark features on her tan muzzle patch
   mimi: { ey: 61, my: 69, sc: "#6e5228" },
 };
 const EX1 = 32, EX2 = 49, MX = 40;        // left eye / right eye / mouth centre x
@@ -130,10 +130,13 @@ function moodFace(cat, mood) {
       return line(`M${EX1 - 5} ${ey} q5 -3 10 0`) + line(`M${EX2 - 5} ${ey} q5 -3 10 0`) + smile;
     case "sleepy":
       return line(`M${EX1 - 5} ${ey} q5 3 10 0`) + line(`M${EX2 - 5} ${ey} q5 3 10 0`)
-           + line(`M${MX - 2} ${my} q2 2 4 0`, 2);
+           + `<ellipse cx="${MX}" cy="${my}" rx="2.6" ry="2" fill="${sc}"/>`
+           + `<path d="M${MX + 1} ${my + 1} q2 7 0 9 q-3 -2 0 -9 z" fill="#bcdcef"/>`;
     case "happy":
-      return line(`M${EX1 - 5} ${ey + 1} q5 -6 10 0`, 2.3) + line(`M${EX2 - 5} ${ey + 1} q5 -6 10 0`, 2.3)
-           + line(`M${MX - 4} ${my - 1} q4 5 8 0`, 2);
+      return dot(EX1) + dot(EX2)
+           + `<path d="M${MX - 5} ${my - 1} q5 7 10 0 z" fill="#c46079"/>`
+           + `<ellipse cx="${EX1 - 6}" cy="${my - 3}" rx="3.4" ry="2.2" fill="#e3a692" opacity="0.6"/>`
+           + `<ellipse cx="${EX2 + 6}" cy="${my - 3}" rx="3.4" ry="2.2" fill="#e3a692" opacity="0.6"/>`;
     case "lovey":
       return heart(EX1) + heart(EX2) + smile
            + `<path d="M62 30 q-3 -4 -6 -1 q-3 3 6 7 q9 -4 6 -7 q-3 -3 -6 1 z" fill="#e3a692" opacity="0.9"/>`
@@ -154,8 +157,13 @@ function moodFace(cat, mood) {
            + `<path d="M57 ${ey - 7} q-3 5 0 7 q3 -2 0 -7 z" fill="#8fc0e0"/>`;
     case "hungry":
       return dot(EX1) + dot(EX2)
-           + line(`M${MX - 3} ${my} q3 3 6 0`, 2)
-           + `<path d="M${MX - 1} ${my + 1} q1.5 3 3 0 z" fill="#d4756a"/>`;
+           + line(`M${MX - 4} ${my} q4 4 8 0`, 2)
+           + `<path d="M${MX - 3} ${my + 1} q3 7 6 0 z" fill="#d4756a"/>`
+           + `<g stroke="#6f5c45" stroke-width="1.6" fill="none" stroke-linecap="round">
+                <path d="M58 85 v10 M61 85 v10 M64 85 v10 M61 95 v4"/>
+                <path d="M76 90 v9"/>
+              </g>
+              <path d="M74 85 q4 1 4 5 l-4 0 z" fill="#6f5c45"/>`;
     case "playful":
       return dot(EX1) + line(`M${EX2 - 5} ${ey} q5 -3 10 0`)
            + line(`M${MX - 4} ${my} q5 3 9 -1`, 2);
@@ -230,6 +238,9 @@ function roomShell() {
       <span class="deco-garland" aria-hidden="true"></span>
       <span class="deco-frame" aria-hidden="true">♡</span>
       <span class="deco-plant" aria-hidden="true"></span>
+      <span class="deco deco-shelf" aria-hidden="true"><svg viewBox="0 0 64 46" width="100%" height="100%"><rect x="2" y="32" width="60" height="5" rx="1.5" fill="#b98a5c"/><rect x="9" y="12" width="7" height="20" fill="#c8785b"/><rect x="17" y="8" width="7" height="24" fill="#8a9a7b"/><rect x="25" y="14" width="7" height="18" fill="#e0b878"/><g transform="rotate(9 39 22)"><rect x="35" y="11" width="7" height="21" fill="#a85c41"/></g><rect x="49" y="26" width="9" height="6" fill="#c8785b"/><ellipse cx="53.5" cy="24" rx="7" ry="7" fill="#8a9a7b"/></svg></span>
+      <span class="deco deco-clock" aria-hidden="true"><svg viewBox="0 0 30 30" width="100%" height="100%"><circle cx="15" cy="15" r="13" fill="#fffaf0" stroke="#b98a5c" stroke-width="2"/><path d="M15 15 V7 M15 15 l5 3" stroke="#5a4632" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg></span>
+      <span class="deco deco-desk" aria-hidden="true"><svg viewBox="0 0 74 52" width="100%" height="100%"><rect x="6" y="24" width="44" height="6" rx="1" fill="#b98a5c"/><rect x="10" y="30" width="4" height="18" fill="#9c6b3f"/><rect x="42" y="30" width="4" height="18" fill="#9c6b3f"/><rect x="16" y="6" width="24" height="17" rx="2" fill="#2e3550"/><rect x="19" y="9" width="18" height="11" fill="#5fd0c0"/><circle cx="24" cy="14" r="1.6" fill="#fffaf0"/><rect x="33" y="11" width="3" height="7" fill="#f2c14e"/><rect x="26" y="23" width="4" height="3" fill="#2e3550"/><rect x="20" y="26" width="16" height="2" fill="#2e3550"/></svg></span>
       <div class="room-rug" aria-hidden="true"></div>
 
       <div class="room-nooks">
@@ -285,6 +296,7 @@ function catSVG(cat) {
         </g>
         <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
         <path d="M54 41 l9 -20 l11 18 z" fill="#322b27"/>
+        <ellipse cx="40" cy="67" rx="17" ry="12" fill="#d6bd95" stroke="none" opacity="0.92"/>
       </g>
       <g class="cat-face"></g>
     </svg>`;
