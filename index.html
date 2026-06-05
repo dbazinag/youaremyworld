@@ -42,42 +42,43 @@
 
         <!-- the two cats, curled up asleep while we wait -->
         <div class="cats" aria-hidden="true">
-          <!-- Lion: tortoiseshell — orange + dark patches, pointy ears -->
+          <!-- Lion: tortoiseshell — black base with brown + light-brown patches -->
           <svg class="cat cat--lion" viewBox="0 0 130 100" role="img" aria-label="Lion the cat, sleeping">
             <defs>
               <clipPath id="lionBody">
                 <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z"/>
               </clipPath>
             </defs>
-            <g stroke="#5a3a24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <!-- tail (dark) -->
-              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#4e3b30"/>
-              <!-- body base (ginger) -->
-              <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#d98b5f"/>
-              <!-- tortoiseshell dark patches, kept inside the body silhouette -->
+            <g stroke="#241f1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <!-- tail (black) -->
+              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#322b27"/>
+              <!-- body base (black) -->
+              <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#322b27"/>
+              <!-- tortoiseshell patches (brown + light brown), kept inside the body -->
               <g clip-path="url(#lionBody)" stroke="none">
-                <path d="M82 28 q36 4 36 34 q0 24 -20 30 q-22 6 -34 -2 q16 -32 18 -62 z" fill="#4e3b30"/>
-                <path d="M48 40 q16 -2 18 12 q-2 12 -15 10 q-11 -8 -3 -22 z" fill="#4e3b30"/>
+                <path d="M78 34 q40 2 40 30 q0 22 -22 28 q-22 4 -32 -4 q16 -28 14 -54 z" fill="#b9794a"/>
+                <path d="M50 32 q30 -2 34 16 q3 16 -14 22 q-20 4 -26 -8 q2 -18 6 -30 z" fill="#6e4327"/>
+                <path d="M34 40 q12 -2 13 9 q-1 9 -12 8 q-8 -7 -1 -17 z" fill="#b9794a"/>
               </g>
-              <!-- ears: one ginger, one dark (classic tortie split) -->
-              <path d="M34 47 l-7 -21 l20 12 z" fill="#d98b5f"/>
-              <path d="M54 41 l9 -20 l11 18 z" fill="#4e3b30"/>
-              <!-- closed eyes + nose -->
-              <g fill="none" stroke="#5a3a24" stroke-width="2.1">
+              <!-- ears: one black, one brown -->
+              <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
+              <path d="M54 41 l9 -20 l11 18 z" fill="#6e4327"/>
+              <!-- closed eyes + nose (light, so they read on the black face) -->
+              <g fill="none" stroke="#efe2c8" stroke-width="2.1">
                 <path d="M27 65 q6 -3 11 0"/>
                 <path d="M44 65 q6 -3 11 0"/>
                 <path d="M39 71 q3 2.5 6 0"/>
               </g>
             </g>
           </svg>
-          <!-- Mimi: British shorthair — chunky, round, small ears, blue-grey -->
+          <!-- Mimi: golden British shorthair — chunky, round, small low ears -->
           <svg class="cat cat--mimi" viewBox="0 0 130 100" role="img" aria-label="Mimi the cat, sleeping">
-            <g stroke="#43464d" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#b6bdc7"/>
-              <path d="M12 80 q-2 -47 42 -51 q49 -4 64 22 q12 21 -8 37 q-52 14 -98 -8 z" fill="#b6bdc7"/>
-              <path d="M34 47 q0 -10 9 -10 q8 0 8 9 z" fill="#b6bdc7"/>
-              <path d="M55 44 q0 -10 9 -10 q8 0 8 9 z" fill="#b6bdc7"/>
-              <g fill="none" stroke="#43464d" stroke-width="2.1">
+            <g stroke="#9c7536" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#e2ba7e"/>
+              <path d="M12 80 q-2 -47 42 -51 q49 -4 64 22 q12 21 -8 37 q-52 14 -98 -8 z" fill="#e2ba7e"/>
+              <path d="M34 47 q0 -10 9 -10 q8 0 8 9 z" fill="#e2ba7e"/>
+              <path d="M55 44 q0 -10 9 -10 q8 0 8 9 z" fill="#e2ba7e"/>
+              <g fill="none" stroke="#6e5228" stroke-width="2.1">
                 <path d="M27 62 q6 -3 11 0"/>
                 <path d="M44 62 q6 -3 11 0"/>
                 <path d="M39 68 q3 2.5 6 0"/>
