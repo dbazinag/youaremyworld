@@ -5,6 +5,13 @@
 
 import { CONFIG } from "./config.js";
 import { supabase } from "./supabase.js";
+import { initRoom } from "./room.js";
+
+/* show the app screen and spin up the room */
+function enterApp() {
+  show("app");
+  initRoom();
+}
 
 /* ---------- tiny helpers ---------- */
 const $ = (sel) => document.querySelector(sel);
@@ -67,7 +74,7 @@ function startCountdown() {
    data is locked to authenticated users via row-level security. */
 async function enterPrivate() {
   const { data } = await supabase.auth.getSession();
-  show(data.session ? "app" : "gate");   // already logged in? skip the gate
+  if (data.session) enterApp(); else show("gate");   // already logged in? skip the gate
 }
 
 function wireGate() {
@@ -94,7 +101,7 @@ function wireGate() {
       error.hidden = false;
       input.select();
     } else {
-      show("app");
+      enterApp();
     }
   });
 }

@@ -236,6 +236,113 @@ body {
   .tape { display: none; }
 }
 
+/* ============ the cat room ============ */
+#screen-app.is-active { width: 100%; max-width: 760px; }
+
+.room { position: relative; }
+.room .title { margin-bottom: 0.1em; }
+.room-status { color: var(--terracotta-deep); font-size: 0.95rem; min-height: 1.1em; margin: 0.2em 0; }
+
+.room-signout {
+  position: absolute; top: 10px; right: 14px;
+  font-family: "Caveat", cursive; font-size: 1rem;
+  background: none; border: none; cursor: pointer;
+  color: var(--ink-soft); opacity: 0.6;
+}
+.room-signout:hover { opacity: 1; color: var(--terracotta-deep); }
+
+.room-cats {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: clamp(16px, 5vw, 40px);
+  margin-top: 1em;
+}
+
+.cat-spot {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center;
+  width: clamp(180px, 40vw, 240px);
+  padding: 14px 10px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+.cat-spot:hover { background: rgba(200,120,91,0.07); transform: translateY(-2px); }
+.cat-spot:hover .tap-hint { opacity: 0.9; }
+
+.roomcat { width: clamp(150px, 36vw, 200px); height: auto; }
+.cat-spot[data-cat="mimi"] .roomcat { transform: scaleX(-1); } /* face each other */
+.cat-spot.asleep .roomcat { opacity: 0.82; }
+
+.roomcat .eyes-closed { display: none; }
+.roomcat.asleep .eyes-closed { display: block; }
+.roomcat.asleep .eyes-open { display: none; }
+
+.zzz-room {
+  display: none;
+  position: absolute; top: 4px; left: 50%;
+  font-family: "Caveat", cursive; font-size: 1.3rem;
+  color: var(--ink-soft); opacity: 0.7;
+  animation: drift 3.2s ease-in-out infinite;
+}
+.cat-spot.asleep .zzz-room { display: block; }
+
+.mood-bubble {
+  margin-top: 6px;
+  background: var(--paper);
+  border: 1px solid rgba(168,92,65,0.18);
+  border-radius: 999px;
+  padding: 6px 16px;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 3px 0 rgba(168,92,65,0.10);
+}
+.m-emoji { font-size: 1.5rem; }
+.m-label { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--ink); }
+.cat-spot.asleep .mood-bubble { opacity: 0.55; }
+
+.nameplate { margin-top: 8px; font-size: 0.9rem; color: var(--ink-soft); text-align: center; line-height: 1.4; }
+.nameplate strong { color: var(--terracotta-deep); }
+.ago { font-style: italic; }
+
+.tap-hint {
+  margin-top: 6px; font-family: "Caveat", cursive;
+  font-size: 1rem; color: var(--ink-soft); opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+/* mood picker modal */
+.mood-modal {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(59,51,44,0.34);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; animation: fade-up 0.25s ease both;
+}
+.mood-card {
+  background: linear-gradient(#fffaf0, #f7eeda);
+  border-radius: 16px; box-shadow: var(--shadow);
+  padding: 22px 22px 18px; max-width: 380px; width: 100%;
+  text-align: center; border: 1px solid rgba(168,92,65,0.14);
+}
+.mood-modal-title {
+  font-family: "Caveat", cursive; font-size: 1.5rem;
+  color: var(--terracotta-deep); margin: 0 0 0.6em;
+}
+.mood-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.mood-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 10px 4px; cursor: pointer;
+  background: var(--paper); border: 1px solid rgba(168,92,65,0.18);
+  border-radius: 12px;
+  font-family: "Caveat", cursive; font-size: 1.05rem; color: var(--ink);
+  transition: transform 0.1s ease, background 0.15s ease;
+}
+.mood-chip:hover { transform: translateY(-2px); background: #fff4e2; }
+.chip-emoji { font-size: 1.7rem; }
+.mood-cancel {
+  margin-top: 14px; background: none; border: none; cursor: pointer;
+  font-family: "Caveat", cursive; font-size: 1.15rem; color: var(--ink-soft);
+}
+.mood-cancel:hover { color: var(--terracotta-deep); }
+
 @media (prefers-reduced-motion: reduce) {
   *, .screen.is-active { animation: none !important; }
 }
