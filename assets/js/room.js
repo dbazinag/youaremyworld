@@ -33,15 +33,11 @@ const FACE = {
 const EX1 = 32, EX2 = 49, MX = 40;        // left eye / right eye / mouth centre x
 
 let root = null;
-let started = false;
 let picking = null;
 
-/* ---------- entry point ---------- */
-export async function initRoom() {
-  root = document.getElementById("room");
-  if (started) { renderAll(); return; }
-  started = true;
-
+/* ---------- entry point (called once by the app shell) ---------- */
+export async function initRoom(container) {
+  root = container;
   root.innerHTML = roomShell();
   wireHandlers();
 

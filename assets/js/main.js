@@ -5,12 +5,12 @@
 
 import { CONFIG } from "./config.js";
 import { supabase } from "./supabase.js";
-import { initRoom } from "./room.js";
+import { initApp } from "./app.js";
 
-/* show the app screen and spin up the room */
+/* show the app screen and spin up the app shell (nav + views) */
 function enterApp() {
   show("app");
-  initRoom();
+  initApp();
 }
 
 /* ---------- tiny helpers ---------- */
