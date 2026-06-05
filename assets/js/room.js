@@ -96,11 +96,10 @@ function renderAll() {
     const info = localInfo(p.tz);
     const m = state[cat];
     const moodObj = m ? MOODS.find((x) => x.key === m.mood) : null;
-    const asleep = info.night || (m && m.mood === "sleepy");
-    const faceMood = asleep ? "sleepy" : (m ? m.mood : "cozy");
+    const faceMood = m ? m.mood : "cozy"; // mood always shows, even at night
 
     const spot = root.querySelector("#spot-" + cat);
-    spot.classList.toggle("asleep", !!asleep);
+    spot.classList.toggle("night", info.night); // night only adds the Z's
     spot.querySelector(".cat-face").innerHTML = moodFace(cat, faceMood);
 
     const win = spot.querySelector(".window");

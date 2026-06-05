@@ -357,7 +357,6 @@ body {
 
 .roomcat { width: clamp(140px, 34vw, 180px); height: auto; position: relative; }
 .nook[data-cat="mimi"] .roomcat { transform: scaleX(-1); } /* face each other */
-.nook.asleep .roomcat { opacity: 0.85; }
 
 .zzz-room {
   display: none;
@@ -366,7 +365,7 @@ body {
   color: var(--ink); opacity: 0.65;
   animation: drift 3.2s ease-in-out infinite;
 }
-.nook.asleep .zzz-room { display: block; }
+.nook.night .zzz-room { display: block; }
 
 .mood-bubble {
   margin-top: 6px;
@@ -378,7 +377,6 @@ body {
 }
 .m-emoji { font-size: 1.4rem; }
 .m-label { font-family: "Caveat", cursive; font-size: 1.25rem; color: var(--ink); }
-.nook.asleep .mood-bubble { opacity: 0.6; }
 
 .nameplate { margin-top: 7px; font-size: 0.84rem; color: var(--ink-soft); text-align: center; line-height: 1.4; }
 .nameplate strong { color: var(--terracotta-deep); }
