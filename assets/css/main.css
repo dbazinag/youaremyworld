@@ -247,65 +247,142 @@ body {
   position: absolute; top: 10px; right: 14px;
   font-family: "Caveat", cursive; font-size: 1rem;
   background: none; border: none; cursor: pointer;
-  color: var(--ink-soft); opacity: 0.6;
+  color: var(--ink-soft); opacity: 0.6; z-index: 3;
 }
 .room-signout:hover { opacity: 1; color: var(--terracotta-deep); }
 
-.room-cats {
-  display: flex; justify-content: center; flex-wrap: wrap;
-  gap: clamp(16px, 5vw, 40px);
-  margin-top: 1em;
-}
-
-.cat-spot {
+/* the diorama room: soft wall on top, wood floor below */
+.room-scene {
   position: relative;
-  display: flex; flex-direction: column; align-items: center;
-  width: clamp(180px, 40vw, 240px);
-  padding: 14px 10px 10px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.12s ease;
+  margin-top: 1em;
+  border-radius: 18px;
+  overflow: hidden;
+  padding: 16px 12px 18px;
+  border: 2px solid rgba(168,92,65,0.22);
+  background: linear-gradient(to bottom, #efe7d2 0 56%, #d7b485 56% 100%);
+  box-shadow: inset 0 12px 26px rgba(0,0,0,0.06),
+              inset 0 -10px 20px rgba(90,60,30,0.12);
 }
-.cat-spot:hover { background: rgba(200,120,91,0.07); transform: translateY(-2px); }
-.cat-spot:hover .tap-hint { opacity: 0.9; }
+.room-scene::after { /* floor planks */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44%;
+  background-image: repeating-linear-gradient(90deg,
+    rgba(120,80,40,0.12) 0 1.5px, transparent 1.5px 70px);
+  pointer-events: none;
+}
 
-.roomcat { width: clamp(150px, 36vw, 200px); height: auto; }
-.cat-spot[data-cat="mimi"] .roomcat { transform: scaleX(-1); } /* face each other */
-.cat-spot.asleep .roomcat { opacity: 0.82; }
+/* wall decor */
+.deco-garland {
+  position: absolute; top: 12px; left: 0; right: 0; height: 20px;
+  background-image:
+    radial-gradient(circle at 12px 11px, var(--terracotta) 0 3px, transparent 4px),
+    radial-gradient(circle at 36px 14px, var(--sage) 0 3px, transparent 4px);
+  background-size: 48px 20px;
+  border-top: 2px dashed rgba(111,97,87,0.3);
+  opacity: 0.7; pointer-events: none;
+}
+.deco-frame {
+  position: absolute; top: 30px; left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  width: 40px; height: 34px; border: 3px solid #b98a5c; border-radius: 4px;
+  background: #fffaf0; color: var(--blush); font-size: 1.3rem; line-height: 30px;
+  text-align: center; box-shadow: 0 2px 0 rgba(0,0,0,0.1); pointer-events: none;
+}
+.deco-plant {
+  position: absolute; right: 16px; top: 44px; width: 20px; height: 28px;
+  background:
+    radial-gradient(ellipse at 50% 35%, var(--sage) 0 58%, transparent 60%),
+    linear-gradient(#c8785b, #a85c41);
+  background-size: 100% 20px, 100% 12px; background-position: top, bottom;
+  background-repeat: no-repeat; opacity: 0.85; pointer-events: none;
+}
+.room-rug {
+  position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%);
+  width: 66%; height: 80px;
+  background: radial-gradient(ellipse at center,
+    #cf9173 0 38%, #bd7a5c 38% 56%, #cf9173 56% 74%, #bd7a5c 74% 100%);
+  border-radius: 50%; opacity: 0.5; pointer-events: none;
+}
 
-.roomcat .eyes-closed { display: none; }
-.roomcat.asleep .eyes-closed { display: block; }
-.roomcat.asleep .eyes-open { display: none; }
+.room-nooks {
+  position: relative; z-index: 1;
+  display: flex; justify-content: space-around; gap: 10px;
+}
+.nook {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; padding: 6px 4px 2px; border-radius: 12px;
+  transition: transform 0.12s ease;
+}
+.nook:hover { transform: translateY(-2px); }
+.nook:hover .tap-hint { opacity: 0.9; }
+
+/* little window with day/night sky */
+.window {
+  width: 78px; height: 56px; margin-bottom: 4px;
+  border: 3px solid #b98a5c; border-radius: 8px 8px 5px 5px;
+  overflow: hidden; position: relative;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+}
+.window::after { /* cross bars */
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(#b98a5c,#b98a5c) center/3px 100% no-repeat,
+    linear-gradient(#b98a5c,#b98a5c) center/100% 3px no-repeat;
+  opacity: 0.9; pointer-events: none;
+}
+.window .sky {
+  width: 100%; height: 100%; position: relative;
+  background: linear-gradient(#bfe3f2, #eaf6fb); transition: background 0.4s ease;
+}
+.window .sky::before { /* sun */
+  content: ""; position: absolute; top: 8px; right: 10px;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #f2c14e; box-shadow: 0 0 8px rgba(242,193,78,0.7);
+  transition: background 0.4s ease;
+}
+.window.night .sky { background: linear-gradient(#222c4d, #3a4a73); }
+.window.night .sky::before { background: #e9e4cf; box-shadow: 0 0 8px rgba(233,228,207,0.5); }
+
+.cat-wrap { position: relative; display: flex; justify-content: center; align-items: flex-end; }
+.cushion {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  width: 118px; height: 24px; border-radius: 50%;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.08);
+}
+.cushion--terra { background: #c8785b; }
+.cushion--sage  { background: #8a9a7b; }
+
+.roomcat { width: clamp(140px, 34vw, 180px); height: auto; position: relative; }
+.nook[data-cat="mimi"] .roomcat { transform: scaleX(-1); } /* face each other */
+.nook.asleep .roomcat { opacity: 0.85; }
 
 .zzz-room {
   display: none;
-  position: absolute; top: 4px; left: 50%;
+  position: absolute; top: -6px; left: 56%; z-index: 2;
   font-family: "Caveat", cursive; font-size: 1.3rem;
-  color: var(--ink-soft); opacity: 0.7;
+  color: var(--ink); opacity: 0.6;
   animation: drift 3.2s ease-in-out infinite;
 }
-.cat-spot.asleep .zzz-room { display: block; }
+.nook.asleep .zzz-room { display: block; }
 
 .mood-bubble {
   margin-top: 6px;
   background: var(--paper);
   border: 1px solid rgba(168,92,65,0.18);
-  border-radius: 999px;
-  padding: 6px 16px;
-  display: inline-flex; align-items: center; gap: 8px;
+  border-radius: 999px; padding: 5px 14px;
+  display: inline-flex; align-items: center; gap: 7px;
   box-shadow: 0 3px 0 rgba(168,92,65,0.10);
 }
-.m-emoji { font-size: 1.5rem; }
-.m-label { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--ink); }
-.cat-spot.asleep .mood-bubble { opacity: 0.55; }
+.m-emoji { font-size: 1.4rem; }
+.m-label { font-family: "Caveat", cursive; font-size: 1.25rem; color: var(--ink); }
+.nook.asleep .mood-bubble { opacity: 0.6; }
 
-.nameplate { margin-top: 8px; font-size: 0.9rem; color: var(--ink-soft); text-align: center; line-height: 1.4; }
+.nameplate { margin-top: 7px; font-size: 0.84rem; color: var(--ink-soft); text-align: center; line-height: 1.4; }
 .nameplate strong { color: var(--terracotta-deep); }
 .ago { font-style: italic; }
 
 .tap-hint {
-  margin-top: 6px; font-family: "Caveat", cursive;
-  font-size: 1rem; color: var(--ink-soft); opacity: 0.45;
+  margin-top: 5px; font-family: "Caveat", cursive;
+  font-size: 0.95rem; color: var(--ink-soft); opacity: 0.4;
   transition: opacity 0.2s ease;
 }
 

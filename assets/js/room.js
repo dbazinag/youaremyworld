@@ -1,8 +1,9 @@
 /* =========================================================
    The cat room — Lion & Mimi share one cozy room.
-   Tap either cat to set its mood; it syncs live (Supabase
-   realtime) to the other person. Cats auto-sleep when it's
-   night where their person is.
+   Tap either cat to set its mood; the cat's FACE changes,
+   it syncs live (Supabase realtime) to the other person,
+   and cats auto-sleep when it's night where their person is.
+   Each cat's window shows their city's real sky (day/night).
    ========================================================= */
 
 import { supabase } from "./supabase.js";
@@ -20,14 +21,21 @@ const MOODS = [
   { key: "playful",  emoji: "😼",  label: "playful" },
 ];
 
-const PEOPLE = CONFIG.people;           // { lion:{name,city,tz}, mimi:{...} }
-const state = { lion: null, mimi: null }; // each: { cat, mood, updated_at }
+const PEOPLE = CONFIG.people;             // { lion:{name,city,tz}, mimi:{...} }
+const state  = { lion: null, mimi: null }; // each: { cat, mood, updated_at }
+
+// face geometry per cat (eye line / mouth line / stroke colour)
+const FACE = {
+  lion: { ey: 64, my: 72, sc: "#efe2c8" },
+  mimi: { ey: 61, my: 69, sc: "#6e5228" },
+};
+const EX1 = 32, EX2 = 49, MX = 40;        // left eye / right eye / mouth centre x
 
 let root = null;
 let started = false;
 let picking = null;
 
-/* ---------- entry point (called by main.js when entering the app) ---------- */
+/* ---------- entry point ---------- */
 export async function initRoom() {
   root = document.getElementById("room");
   if (started) { renderAll(); return; }
@@ -45,7 +53,6 @@ export async function initRoom() {
   }
   renderAll();
 
-  // live updates from the other person
   supabase
     .channel("moods-rt")
     .on("postgres_changes",
@@ -58,8 +65,7 @@ export async function initRoom() {
         })
     .subscribe();
 
-  // keep the clocks / "x ago" fresh
-  setInterval(renderAll, 30000);
+  setInterval(renderAll, 30000); // keep clocks / "x ago" fresh
 }
 
 /* ---------- time helpers ---------- */
@@ -91,20 +97,70 @@ function renderAll() {
     const m = state[cat];
     const moodObj = m ? MOODS.find((x) => x.key === m.mood) : null;
     const asleep = info.night || (m && m.mood === "sleepy");
+    const faceMood = asleep ? "sleepy" : (m ? m.mood : "cozy");
 
     const spot = root.querySelector("#spot-" + cat);
     spot.classList.toggle("asleep", !!asleep);
-    spot.querySelector(".roomcat").classList.toggle("asleep", !!asleep);
+    spot.querySelector(".cat-face").innerHTML = moodFace(cat, faceMood);
 
-    const bubble = spot.querySelector(".mood-bubble");
-    bubble.innerHTML = moodObj
+    const win = spot.querySelector(".window");
+    win.classList.toggle("night", info.night);
+
+    spot.querySelector(".mood-bubble").innerHTML = moodObj
       ? `<span class="m-emoji">${moodObj.emoji}</span><span class="m-label">${moodObj.label}</span>`
       : `<span class="m-label">no mood yet</span>`;
 
     const sky = info.night ? "🌙" : "☀️";
     const agoTxt = m ? ` · <span class="ago">${ago(m.updated_at)}</span>` : "";
     spot.querySelector(".nameplate").innerHTML =
-      `<strong>${p.name}</strong> · ${sky} ${info.timeStr} · ${p.city}${agoTxt}`;
+      `<strong>${p.name}</strong> · ${sky}&nbsp;${info.timeStr} · ${p.city}${agoTxt}`;
+  }
+}
+
+/* ---------- the expressive face ---------- */
+function moodFace(cat, mood) {
+  const { ey, my, sc } = FACE[cat];
+  const line = (d, w = 2.1) => `<path d="${d}" fill="none" stroke="${sc}" stroke-width="${w}" stroke-linecap="round"/>`;
+  const dot  = (x, rx = 2.9, ry = 3.5) => `<ellipse cx="${x}" cy="${ey}" rx="${rx}" ry="${ry}" fill="${sc}"/>`;
+  const smile = line(`M${MX - 3} ${my} q3 2.6 6 0`, 2);
+  const heart = (x) => `<path transform="translate(${x - 5},${ey - 5})" d="M5 9 Q0 4.4 0 2.5 Q0 0 2.5 0 Q5 0 5 2.3 Q5 0 7.5 0 Q10 0 10 2.5 Q10 4.4 5 9 Z" fill="#d4756a"/>`;
+
+  switch (mood) {
+    case "cozy":
+      return line(`M${EX1 - 5} ${ey} q5 -3 10 0`) + line(`M${EX2 - 5} ${ey} q5 -3 10 0`) + smile;
+    case "sleepy":
+      return line(`M${EX1 - 5} ${ey} q5 3 10 0`) + line(`M${EX2 - 5} ${ey} q5 3 10 0`)
+           + line(`M${MX - 2} ${my} q2 2 4 0`, 2);
+    case "happy":
+      return line(`M${EX1 - 5} ${ey + 1} q5 -6 10 0`, 2.3) + line(`M${EX2 - 5} ${ey + 1} q5 -6 10 0`, 2.3)
+           + line(`M${MX - 4} ${my - 1} q4 5 8 0`, 2);
+    case "lovey":
+      return heart(EX1) + heart(EX2) + smile
+           + `<path d="M62 30 q-3 -4 -6 -1 q-3 3 6 7 q9 -4 6 -7 q-3 -3 -6 1 z" fill="#e3a692" opacity="0.9"/>`
+           + `<path d="M74 20 q-2 -3 -4.5 -0.8 q-2 2 4.5 5 q6.5 -3 4.5 -5 q-2.2 -2.2 -4.5 0.8 z" fill="#e3a692" opacity="0.75"/>`;
+    case "missing":
+      return dot(EX1, 3.6, 4.4) + `<circle cx="${EX1 + 1.2}" cy="${ey - 1.6}" r="1.1" fill="#fff"/>`
+           + dot(EX2, 3.6, 4.4) + `<circle cx="${EX2 + 1.2}" cy="${ey - 1.6}" r="1.1" fill="#fff"/>`
+           + line(`M${MX - 3} ${my} q1.5 2 3 0 q1.5 -2 3 0`, 2)
+           + `<path d="M${EX1 - 3} ${ey + 4} q-2 5 0 6 q2 -1 0 -6 z" fill="#8fc0e0"/>`;
+    case "grumpy":
+      return line(`M${EX1 - 5} ${ey - 3} L${EX1 + 5} ${ey + 1}`, 2.4)
+           + line(`M${EX2 - 5} ${ey + 1} L${EX2 + 5} ${ey - 3}`, 2.4)
+           + line(`M${MX - 3} ${my} L${MX + 3} ${my}`, 2);
+    case "stressed":
+      return `<ellipse cx="${EX1}" cy="${ey}" rx="2.8" ry="3.6" fill="none" stroke="${sc}" stroke-width="2"/>`
+           + `<ellipse cx="${EX2}" cy="${ey}" rx="2.8" ry="3.6" fill="none" stroke="${sc}" stroke-width="2"/>`
+           + `<ellipse cx="${MX}" cy="${my}" rx="2.4" ry="1.8" fill="${sc}"/>`
+           + `<path d="M57 ${ey - 7} q-3 5 0 7 q3 -2 0 -7 z" fill="#8fc0e0"/>`;
+    case "hungry":
+      return dot(EX1) + dot(EX2)
+           + line(`M${MX - 3} ${my} q3 3 6 0`, 2)
+           + `<path d="M${MX - 1} ${my + 1} q1.5 3 3 0 z" fill="#d4756a"/>`;
+    case "playful":
+      return dot(EX1) + line(`M${EX2 - 5} ${ey} q5 -3 10 0`)
+           + line(`M${MX - 4} ${my} q5 3 9 -1`, 2);
+    default:
+      return line(`M${EX1 - 5} ${ey} q5 -3 10 0`) + line(`M${EX2 - 5} ${ey} q5 -3 10 0`) + smile;
   }
 }
 
@@ -144,12 +200,12 @@ async function setMood(cat, key) {
 
 /* ---------- wiring ---------- */
 function wireHandlers() {
-  root.querySelectorAll(".cat-spot").forEach((spot) => {
-    spot.addEventListener("click", () => openPicker(spot.dataset.cat));
+  root.querySelectorAll(".nook").forEach((nook) => {
+    nook.addEventListener("click", () => openPicker(nook.dataset.cat));
   });
   root.querySelector(".mood-cancel").addEventListener("click", closePicker);
   root.querySelector(".mood-modal").addEventListener("click", (e) => {
-    if (e.target.classList.contains("mood-modal")) closePicker(); // click backdrop
+    if (e.target.classList.contains("mood-modal")) closePicker();
   });
   root.querySelector(".mood-grid").addEventListener("click", (e) => {
     const btn = e.target.closest(".mood-chip");
@@ -169,20 +225,16 @@ function roomShell() {
     <p class="kicker">our little room</p>
     <h2 class="title title--sm">how we're feeling</h2>
     <p class="room-status"></p>
-    <div class="room-cats">
-      <div class="cat-spot" data-cat="lion" id="spot-lion">
-        <span class="zzz-room">z &nbsp;z &nbsp;z</span>
-        ${lionSVG()}
-        <div class="mood-bubble"></div>
-        <div class="nameplate"></div>
-        <span class="tap-hint">tap to set mood</span>
-      </div>
-      <div class="cat-spot" data-cat="mimi" id="spot-mimi">
-        <span class="zzz-room">z &nbsp;z &nbsp;z</span>
-        ${mimiSVG()}
-        <div class="mood-bubble"></div>
-        <div class="nameplate"></div>
-        <span class="tap-hint">tap to set mood</span>
+
+    <div class="room-scene">
+      <span class="deco-garland" aria-hidden="true"></span>
+      <span class="deco-frame" aria-hidden="true">♡</span>
+      <span class="deco-plant" aria-hidden="true"></span>
+      <div class="room-rug" aria-hidden="true"></div>
+
+      <div class="room-nooks">
+        ${nook("lion", "terra")}
+        ${nook("mimi", "sage")}
       </div>
     </div>
   </div>
@@ -196,55 +248,55 @@ function roomShell() {
   </div>`;
 }
 
-function lionSVG() {
+function nook(cat, cushion) {
   return `
-  <svg class="roomcat" data-cat="lion" viewBox="0 0 130 100" role="img" aria-label="Lion">
-    <defs>
-      <clipPath id="rmLionBody"><path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z"/></clipPath>
-      <filter id="rmFurBrown" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.075" numOctaves="3" seed="11" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
-      <filter id="rmFurTan" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="3" seed="4" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 0 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
-      <filter id="rmFurBeige" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="23" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
-      <filter id="rmFurWhite" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="31" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 0 0 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
-    </defs>
-    <g stroke="#241f1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#322b27"/>
-      <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#322b27"/>
-      <g clip-path="url(#rmLionBody)" stroke="none">
-        <rect x="8" y="20" width="120" height="80" fill="#6e4327" filter="url(#rmFurBrown)"/>
-        <rect x="8" y="20" width="120" height="80" fill="#b9794a" filter="url(#rmFurTan)"/>
-        <rect x="8" y="20" width="120" height="80" fill="#d6bd95" filter="url(#rmFurBeige)"/>
-        <rect x="8" y="20" width="120" height="80" fill="#f4eee2" filter="url(#rmFurWhite)"/>
-      </g>
-      <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
-      <path d="M54 41 l9 -20 l11 18 z" fill="#322b27"/>
-      <g class="eyes-closed" fill="none" stroke="#efe2c8" stroke-width="2.1">
-        <path d="M27 65 q6 -3 11 0"/><path d="M44 65 q6 -3 11 0"/><path d="M39 71 q3 2.5 6 0"/>
-      </g>
-      <g class="eyes-open">
-        <ellipse cx="32" cy="64" rx="3" ry="3.6" fill="#efe2c8"/>
-        <ellipse cx="49" cy="64" rx="3" ry="3.6" fill="#efe2c8"/>
-        <path d="M38 71 q3 3 6 0" fill="none" stroke="#efe2c8" stroke-width="2"/>
-      </g>
-    </g>
-  </svg>`;
+  <div class="nook" data-cat="${cat}" id="spot-${cat}">
+    <div class="window"><div class="sky"></div></div>
+    <div class="cat-wrap">
+      <span class="zzz-room">z &nbsp;z &nbsp;z</span>
+      <div class="cushion cushion--${cushion}"></div>
+      ${catSVG(cat)}
+    </div>
+    <div class="mood-bubble"></div>
+    <div class="nameplate"></div>
+    <span class="tap-hint">tap to set mood</span>
+  </div>`;
 }
 
-function mimiSVG() {
+function catSVG(cat) {
+  if (cat === "lion") {
+    return `
+    <svg class="roomcat" viewBox="0 0 130 100" role="img" aria-label="Lion">
+      <defs>
+        <clipPath id="rmLionBody"><path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z"/></clipPath>
+        <filter id="rmFurBrown" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.075" numOctaves="3" seed="11" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+        <filter id="rmFurTan" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.11" numOctaves="3" seed="4" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 0 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+        <filter id="rmFurBeige" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="23" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 1 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+        <filter id="rmFurWhite" x="0%" y="0%" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="3" seed="31" result="n"/><feComponentTransfer in="n" result="m"><feFuncA type="discrete" tableValues="0 0 0 0 0 0 1"/></feComponentTransfer><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+      </defs>
+      <g stroke="#241f1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#322b27"/>
+        <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#322b27"/>
+        <g clip-path="url(#rmLionBody)" stroke="none">
+          <rect x="8" y="20" width="120" height="80" fill="#6e4327" filter="url(#rmFurBrown)"/>
+          <rect x="8" y="20" width="120" height="80" fill="#b9794a" filter="url(#rmFurTan)"/>
+          <rect x="8" y="20" width="120" height="80" fill="#d6bd95" filter="url(#rmFurBeige)"/>
+          <rect x="8" y="20" width="120" height="80" fill="#f4eee2" filter="url(#rmFurWhite)"/>
+        </g>
+        <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
+        <path d="M54 41 l9 -20 l11 18 z" fill="#322b27"/>
+      </g>
+      <g class="cat-face"></g>
+    </svg>`;
+  }
   return `
-  <svg class="roomcat" data-cat="mimi" viewBox="0 0 130 100" role="img" aria-label="Mimi">
+  <svg class="roomcat" viewBox="0 0 130 100" role="img" aria-label="Mimi">
     <g stroke="#9c7536" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
       <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#e2ba7e"/>
       <path d="M12 80 q-2 -47 42 -51 q49 -4 64 22 q12 21 -8 37 q-52 14 -98 -8 z" fill="#e2ba7e"/>
       <path d="M34 47 q0 -10 9 -10 q8 0 8 9 z" fill="#e2ba7e"/>
       <path d="M55 44 q0 -10 9 -10 q8 0 8 9 z" fill="#e2ba7e"/>
-      <g class="eyes-closed" fill="none" stroke="#6e5228" stroke-width="2.1">
-        <path d="M27 62 q6 -3 11 0"/><path d="M44 62 q6 -3 11 0"/><path d="M39 68 q3 2.5 6 0"/>
-      </g>
-      <g class="eyes-open">
-        <ellipse cx="32" cy="61" rx="3" ry="3.6" fill="#5b4422"/>
-        <ellipse cx="49" cy="61" rx="3" ry="3.6" fill="#5b4422"/>
-        <path d="M38 68 q3 3 6 0" fill="none" stroke="#6e5228" stroke-width="2"/>
-      </g>
     </g>
+    <g class="cat-face"></g>
   </svg>`;
 }
