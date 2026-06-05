@@ -306,7 +306,6 @@ body {
 .deco { position: absolute; pointer-events: none; }
 .deco-shelf { top: 28px; left: 14px; width: 64px; height: 46px; }
 .deco-clock { top: 32px; right: 64px; width: 28px; height: 28px; }
-.deco-desk  { bottom: 12px; left: 8px; width: 76px; height: 54px; z-index: 0; }
 
 .room-nooks {
   position: relative; z-index: 1;
