@@ -48,26 +48,29 @@
               <clipPath id="lionBody">
                 <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z"/>
               </clipPath>
+              <!-- blur softens the patches so they blend like real tortie fur -->
+              <filter id="furBlur" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="2.4" />
+              </filter>
             </defs>
             <g stroke="#241f1c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
               <!-- tail (black) -->
               <path d="M92 82 q30 4 34 -14 q3 -13 -12 -17" fill="#322b27"/>
               <!-- body base (black) -->
               <path d="M16 84 q-6 -42 34 -48 q46 -7 66 18 q14 19 -4 36 q-48 16 -96 -6 z" fill="#322b27"/>
-              <!-- tortoiseshell: small, frequent flecks of brown + light brown -->
-              <g clip-path="url(#lionBody)" stroke="none">
-                <ellipse cx="40" cy="48" rx="6" ry="5"   fill="#6e4327"/>
-                <ellipse cx="58" cy="44" rx="6.5" ry="5.5" fill="#b9794a"/>
-                <ellipse cx="74" cy="50" rx="6" ry="5"   fill="#6e4327"/>
-                <ellipse cx="90" cy="46" rx="6.5" ry="5.5" fill="#b9794a"/>
-                <ellipse cx="101" cy="61" rx="7" ry="6"  fill="#6e4327"/>
-                <ellipse cx="86" cy="66" rx="6" ry="5"   fill="#b9794a"/>
-                <ellipse cx="70" cy="64" rx="6.5" ry="5.5" fill="#6e4327"/>
-                <ellipse cx="54" cy="57" rx="5" ry="4"   fill="#b9794a"/>
-                <ellipse cx="96" cy="75" rx="6" ry="5"   fill="#b9794a"/>
-                <ellipse cx="78" cy="78" rx="6" ry="5"   fill="#6e4327"/>
-                <ellipse cx="61" cy="75" rx="5" ry="4"   fill="#b9794a"/>
-                <ellipse cx="30" cy="57" rx="5" ry="4"   fill="#6e4327"/>
+              <!-- tortoiseshell: irregular overlapping patches, blurred so they
+                   blend into the black and each other (brindled, not dotty) -->
+              <g clip-path="url(#lionBody)" stroke="none" filter="url(#furBlur)">
+                <ellipse cx="46" cy="50" rx="13" ry="9"  fill="#6e4327" transform="rotate(-18 46 50)"/>
+                <ellipse cx="68" cy="45" rx="14" ry="10" fill="#b9794a" transform="rotate(12 68 45)"/>
+                <ellipse cx="90" cy="52" rx="15" ry="11" fill="#6e4327" transform="rotate(-10 90 52)"/>
+                <ellipse cx="101" cy="67" rx="12" ry="10" fill="#b9794a"/>
+                <ellipse cx="80" cy="70" rx="15" ry="10" fill="#6e4327" transform="rotate(8 80 70)"/>
+                <ellipse cx="60" cy="66" rx="13" ry="9"  fill="#b9794a" transform="rotate(-14 60 66)"/>
+                <ellipse cx="72" cy="58" rx="11" ry="8"  fill="#6e4327" transform="rotate(24 72 58)"/>
+                <ellipse cx="93" cy="43" rx="10" ry="7"  fill="#b9794a"/>
+                <ellipse cx="52" cy="79" rx="12" ry="7"  fill="#b9794a" transform="rotate(-8 52 79)"/>
+                <ellipse cx="34" cy="63" rx="9"  ry="7"  fill="#6e4327"/>
               </g>
               <!-- ears (dark, to match her face) -->
               <path d="M34 47 l-7 -21 l20 12 z" fill="#322b27"/>
@@ -139,10 +142,9 @@
     <!-- ============ SCREEN 4: the app (placeholder for now) ============ -->
     <section id="screen-app" class="screen">
       <div class="journal">
-        <h2 class="title title--sm">our scrapbook is being built 🪡</h2>
-        <p class="kicker">this is where the timeline, the map, Mimi &amp; Lion's moods,
-          the constellation, and everything else will live.</p>
-        <p class="until">coming together, page by page.</p>
+        <h2 class="title title--sm">welcome to our world 🤍</h2>
+        <p class="kicker">there's more on the way… i'm making it just for us.</p>
+        <p class="until">come back soon 🐾</p>
       </div>
     </section>
 
