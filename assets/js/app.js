@@ -63,4 +63,5 @@ function showView(key) {
 
   const v = state[key];
   if (!v.done) { v.init(v.el); v.done = true; }
+  document.dispatchEvent(new CustomEvent("view:shown", { detail: key }));
 }

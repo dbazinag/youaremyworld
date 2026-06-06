@@ -30,6 +30,9 @@ export async function initStats(container) {
   onWalletChange((s) => setStat("treats", s.treats));
   setStat("treats", getState().treats);
 
+  // refresh the counts every time the tab is reopened (pets, memories, etc.)
+  document.addEventListener("view:shown", (e) => { if (e.detail === "stats" && root) loadCounts(); });
+
   await loadCounts();
 }
 

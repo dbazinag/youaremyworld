@@ -302,12 +302,14 @@ function onExtraUp() {
   if (d.moved && d.x != null) setDecorPos(d.id, +d.x.toFixed(1), +d.y.toFixed(1));
 }
 
-function bumpPets(cat) {
+async function bumpPets(cat) {
   const next = ((state[cat] && state[cat].pets) || 0) + 1;
   state[cat] = { ...(state[cat] || { cat }), cat, pets: next };
   const el = root.querySelector("#spot-" + cat + " .pet-count");
   if (el) el.textContent = `🤍 petted ${next}×`;
-  supabase.from("moods").update({ pets: next }).eq("cat", cat);  // save now so it survives refresh
+  // MUST await — the Supabase builder is lazy and won't send the request otherwise
+  const { error } = await supabase.from("moods").update({ pets: next }).eq("cat", cat);
+  if (error) console.warn("pet save failed:", error.message);
 }
 
 /* ---------- wiring ---------- */
