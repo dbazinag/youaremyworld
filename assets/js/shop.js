@@ -60,7 +60,10 @@ function wire() {
     const buyBtn = e.target.closest(".shop-buy");
     if (buyBtn) {
       const r = await buy(buyBtn.dataset.id);
-      if (!r.ok && r.reason === "poor") flash("not enough treats yet 🐟");
+      if (!r.ok) {
+        if (r.reason === "poor") flash("not enough treats yet 🐟");
+        else if (r.reason === "error") flash("couldn't save — is the shop set up? (" + r.error + ")");
+      }
       return;
     }
     const hat = e.target.closest(".hat-pick");

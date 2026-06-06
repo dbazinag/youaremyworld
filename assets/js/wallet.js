@@ -86,7 +86,7 @@ export async function buy(id) {
   state.owned.add(id);
   notify();
   const { error } = await supabase.from("unlocks").insert({ item: id });
-  if (error) { state.treats += it.price; state.owned.delete(id); notify(); return { ok: false, reason: "error" }; }
+  if (error) { state.treats += it.price; state.owned.delete(id); notify(); return { ok: false, reason: "error", error: error.message }; }
   await supabase.from("wallet").update({ treats: state.treats }).eq("id", 1);
   return { ok: true };
 }
