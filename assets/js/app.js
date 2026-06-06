@@ -9,11 +9,13 @@ import { initTimeline } from "./timeline.js";
 import { initMap } from "./map.js";
 import { initShop } from "./shop.js";
 import { initWallet } from "./wallet.js";
+import { initDoodles } from "./doodles.js";
 
 const VIEWS = [
   { key: "room",     label: "our room",     init: initRoom },
   { key: "timeline", label: "our timeline", init: initTimeline },
   { key: "map",      label: "our map",      init: initMap },
+  { key: "doodles",  label: "doodles ✏️",   init: initDoodles },
   { key: "shop",     label: "shop ✨",      init: initShop },
 ];
 
