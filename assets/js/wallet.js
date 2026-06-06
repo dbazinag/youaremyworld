@@ -32,15 +32,15 @@ export const CATALOG = {
     { id: "crown",  svg: HAT.crown,  name: "crown",      price: 35 },
   ],
   decor: [
-    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, style: "bottom:4px;left:18px;height:52px" },
-    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  style: "bottom:10px;left:96px;height:26px" },
-    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, style: "bottom:2px;right:20px;height:64px" },
-    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, style: "bottom:8px;right:104px;height:30px" },
-    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, style: "top:128px;left:50%;transform:translateX(-50%);height:58px" },
+    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, h: 52, def: "bottom:4px;left:18px" },
+    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  h: 26, def: "bottom:10px;left:96px" },
+    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, h: 64, def: "bottom:2px;right:20px" },
+    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, h: 30, def: "bottom:8px;right:104px" },
+    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, h: 58, def: "top:128px;left:50%;transform:translateX(-50%)" },
   ],
 };
 
-const DEFAULT_EQUIP = { lion: null, mimi: null, decor: [] };
+const DEFAULT_EQUIP = { lion: null, mimi: null, decor: [], decorPos: {} };
 let state = { treats: 0, owned: new Set(), equipped: { ...DEFAULT_EQUIP } };
 const listeners = new Set();
 let inited = false;
@@ -80,6 +80,7 @@ async function refresh() {
     state.treats = w.treats || 0;
     state.equipped = { ...DEFAULT_EQUIP, ...(w.equipped || {}) };
     if (!Array.isArray(state.equipped.decor)) state.equipped.decor = [];
+    if (!state.equipped.decorPos || typeof state.equipped.decorPos !== "object") state.equipped.decorPos = {};
   }
   state.owned = new Set((u || []).map((x) => x.item));
   notify();
@@ -111,6 +112,13 @@ export async function buy(id) {
 
 export async function equipHat(cat, id) {
   state.equipped[cat] = id || null;
+  notify();
+  await saveEquipped();
+}
+
+export async function setDecorPos(id, x, y) {
+  if (!state.equipped.decorPos) state.equipped.decorPos = {};
+  state.equipped.decorPos[id] = { x, y };
   notify();
   await saveEquipped();
 }

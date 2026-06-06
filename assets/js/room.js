@@ -8,7 +8,7 @@
 
 import { supabase } from "./supabase.js";
 import { CONFIG } from "./config.js";
-import { onWalletChange, getState, earn, itemById } from "./wallet.js";
+import { onWalletChange, getState, earn, itemById, setDecorPos } from "./wallet.js";
 
 const MOODS = [
   { key: "cozy",     emoji: "😌",  label: "cozy" },
@@ -257,14 +257,49 @@ function applyCosmetics(s) {
   }
 
   const extras = root.querySelector(".room-extras");
-  if (extras) {
+  if (extras && !dragging) {     // don't rebuild mid-drag
+    const pos = s.equipped.decorPos || {};
     extras.innerHTML = (s.equipped.decor || [])
       .filter((id) => s.owned.has(id))
       .map((id) => {
         const it = itemById(id);
-        return it ? `<span class="room-extra" style="${it.style}">${it.svg}</span>` : "";
+        if (!it) return "";
+        const p = pos[id];
+        const style = p
+          ? `left:${p.x}%;top:${p.y}%;transform:translate(-50%,-50%);height:${it.h}px`
+          : `${it.def};height:${it.h}px`;
+        return `<span class="room-extra" data-id="${id}" style="${style}">${it.svg}</span>`;
       }).join("");
   }
+}
+
+/* ---------- drag decor around the room ---------- */
+let drag = null, dragging = false;
+function onExtraDown(e) {
+  const el = e.target.closest(".room-extra");
+  if (!el) return;
+  e.preventDefault();
+  const scene = root.querySelector(".room-scene");
+  drag = { el, id: el.dataset.id, rect: scene.getBoundingClientRect(), x: null, y: null, moved: false };
+  dragging = true;
+  el.classList.add("dragging");
+  try { el.setPointerCapture(e.pointerId); } catch (_) {}
+  window.addEventListener("pointermove", onExtraMove);
+  window.addEventListener("pointerup", onExtraUp, { once: true });
+}
+function onExtraMove(e) {
+  if (!drag) return;
+  drag.moved = true;
+  drag.x = Math.min(96, Math.max(3, (e.clientX - drag.rect.left) / drag.rect.width * 100));
+  drag.y = Math.min(93, Math.max(4, (e.clientY - drag.rect.top) / drag.rect.height * 100));
+  drag.el.style.cssText += `;left:${drag.x}%;top:${drag.y}%;right:auto;bottom:auto;transform:translate(-50%,-50%)`;
+}
+function onExtraUp() {
+  window.removeEventListener("pointermove", onExtraMove);
+  const d = drag; drag = null; dragging = false;
+  if (!d) return;
+  d.el.classList.remove("dragging");
+  if (d.moved && d.x != null) setDecorPos(d.id, +d.x.toFixed(1), +d.y.toFixed(1));
 }
 
 const petTimer = {};
@@ -298,6 +333,7 @@ function wireHandlers() {
     await supabase.auth.signOut();
     location.reload();
   });
+  root.querySelector(".room-extras").addEventListener("pointerdown", onExtraDown);
 }
 
 /* ---------- markup ---------- */

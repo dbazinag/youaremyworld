@@ -689,8 +689,12 @@ body {
 .cat-hat svg { width: 30px; height: auto; display: block; }
 .nook[data-cat="lion"] .cat-hat { left: 36%; }
 .nook[data-cat="mimi"] .cat-hat { left: 60%; }
-.room-extras { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.room-extra { position: absolute; display: block; }
+.room-extras { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.room-extra {
+  position: absolute; display: block;
+  pointer-events: auto; cursor: grab; touch-action: none;
+}
+.room-extra.dragging { cursor: grabbing; z-index: 5; filter: drop-shadow(0 5px 7px rgba(59,51,44,0.3)); }
 .room-extra svg { height: 100%; width: auto; display: block; } /* size comes from each item's inline height */
 
 /* ============ shop ============ */
