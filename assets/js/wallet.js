@@ -32,11 +32,11 @@ export const CATALOG = {
     { id: "crown",  svg: HAT.crown,  name: "crown",      price: 35 },
   ],
   decor: [
-    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, style: "bottom:8px;left:24px" },
-    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, style: "bottom:6px;right:24px" },
-    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, style: "bottom:8px;left:33%" },
-    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  style: "bottom:16px;left:54%" },
-    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, style: "top:44px;right:150px" },
+    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, style: "bottom:4px;left:14px;height:50px" },
+    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, style: "bottom:2px;right:16px;height:62px" },
+    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, style: "bottom:6px;left:22%;height:30px" },
+    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  style: "bottom:12px;left:49%;height:24px" },
+    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, style: "top:54px;right:130px;height:56px" },
   ],
 };
 

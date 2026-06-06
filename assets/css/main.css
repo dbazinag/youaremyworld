@@ -310,6 +310,7 @@ body {
 .room-nooks {
   position: relative; z-index: 1;
   display: flex; justify-content: space-around; gap: 10px;
+  padding-bottom: 30px; /* a strip of floor below the text for decor to sit on */
 }
 .nook {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -689,8 +690,8 @@ body {
 .nook[data-cat="lion"] .cat-hat { left: 36%; }
 .nook[data-cat="mimi"] .cat-hat { left: 60%; }
 .room-extras { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.room-extra { position: absolute; }
-.room-extra svg { height: 42px; width: auto; display: block; }
+.room-extra { position: absolute; display: block; }
+.room-extra svg { height: 100%; width: auto; display: block; } /* size comes from each item's inline height */
 
 /* ============ shop ============ */
 .shop .treat-balance { font-family: "Caveat", cursive; font-size: 1.8rem; color: var(--terracotta-deep); margin: 0.2em 0; }
