@@ -77,7 +77,7 @@ async function refresh() {
     supabase.from("unlocks").select("item"),
   ]);
   if (w) {
-    state.treats = w.treats || 0;
+    if (writing === 0) state.treats = w.treats || 0;  // don't stomp an in-flight earn
     state.equipped = { ...DEFAULT_EQUIP, ...(w.equipped || {}) };
     if (!Array.isArray(state.equipped.decor)) state.equipped.decor = [];
     if (!state.equipped.decorPos || typeof state.equipped.decorPos !== "object") state.equipped.decorPos = {};
@@ -86,14 +86,19 @@ async function refresh() {
   notify();
 }
 
-let earnTimer = null;
+let writing = 0;                    // saves in flight — don't let refresh clobber
+async function saveTreats() {
+  writing++;
+  try {
+    const { error } = await supabase.from("wallet").update({ treats: state.treats }).eq("id", 1);
+    if (error) console.warn("treats save failed:", error.message);
+  } finally { writing--; }
+}
+
 export function earn(n) {
   state.treats += n;
   notify();
-  clearTimeout(earnTimer);          // coalesce rapid earns into one write
-  earnTimer = setTimeout(() => {
-    supabase.from("wallet").update({ treats: state.treats }).eq("id", 1);
-  }, 500);
+  saveTreats();
 }
 
 export async function buy(id) {
@@ -106,7 +111,7 @@ export async function buy(id) {
   notify();
   const { error } = await supabase.from("unlocks").insert({ item: id });
   if (error) { state.treats += it.price; state.owned.delete(id); notify(); return { ok: false, reason: "error", error: error.message }; }
-  await supabase.from("wallet").update({ treats: state.treats }).eq("id", 1);
+  await saveTreats();
   return { ok: true };
 }
 
