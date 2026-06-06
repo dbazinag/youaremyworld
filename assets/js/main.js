@@ -6,6 +6,7 @@
 import { CONFIG } from "./config.js";
 import { supabase } from "./supabase.js";
 import { initApp } from "./app.js";
+import { initUnlock } from "./unlock.js";
 
 /* show the app screen and spin up the app shell (nav + views) */
 function enterApp() {
@@ -74,43 +75,15 @@ function startCountdown() {
    data is locked to authenticated users via row-level security. */
 async function enterPrivate() {
   const { data } = await supabase.auth.getSession();
-  if (data.session) enterApp(); else show("gate");   // already logged in? skip the gate
-}
-
-function wireGate() {
-  const form  = $("#gate-form");
-  const input = $("#gate-input");
-  const error = $("#gate-error");
-  const btn   = form.querySelector("button");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    error.hidden = true;
-    btn.disabled = true;
-    btn.textContent = "unlocking…";
-
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email: CONFIG.supabase.sharedEmail,
-      password: input.value,
-    });
-
-    btn.disabled = false;
-    btn.textContent = "unlock";
-
-    if (authError) {
-      error.hidden = false;
-      input.select();
-    } else {
-      enterApp();
-    }
-  });
+  if (data.session) { enterApp(); return; }   // already logged in? skip the games
+  show("gate");
+  initUnlock(document.getElementById("unlock"), enterApp);  // three games -> password
 }
 
 /* ---------- boot ---------- */
 // "open our world" (after the countdown) and the discreet always-there link
 $("#enter-btn").addEventListener("click", enterPrivate);
 $("#peek-link").addEventListener("click", (e) => { e.preventDefault(); enterPrivate(); });
-wireGate();
 
 if (target - Date.now() <= 0) {
   show("congrats");
