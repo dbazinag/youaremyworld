@@ -110,6 +110,9 @@ function renderAll() {
     const agoTxt = m ? ` · <span class="ago">${ago(m.updated_at)}</span>` : "";
     spot.querySelector(".nameplate").innerHTML =
       `<strong>${p.name}</strong> · ${sky}&nbsp;${info.timeStr} · ${p.city}${agoTxt}`;
+
+    const pets = (m && m.pets) || 0;
+    spot.querySelector(".pet-count").textContent = pets ? `🤍 petted ${pets}×` : "";
   }
 }
 
@@ -206,10 +209,47 @@ async function setMood(cat, key) {
   }
 }
 
+/* ---------- pet the cat 🐾 ---------- */
+function petCat(cat) {
+  const spot = root.querySelector("#spot-" + cat);
+  const wrap = spot.querySelector(".cat-wrap");
+
+  wrap.classList.remove("petting");
+  void wrap.offsetWidth;          // restart the animation
+  wrap.classList.add("petting");
+
+  for (let i = 0; i < 3; i++) {
+    const h = document.createElement("span");
+    h.className = "pet-heart";
+    h.textContent = "♥";
+    h.style.left = 38 + Math.random() * 40 + "%";
+    h.style.animationDelay = i * 0.12 + "s";
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 1300);
+  }
+  const purr = document.createElement("span");
+  purr.className = "purr";
+  purr.textContent = "purr~";
+  wrap.appendChild(purr);
+  setTimeout(() => purr.remove(), 1000);
+
+  bumpPets(cat);
+}
+
+async function bumpPets(cat) {
+  const next = ((state[cat] && state[cat].pets) || 0) + 1;
+  state[cat] = { ...(state[cat] || { cat }), cat, pets: next };
+  const el = root.querySelector("#spot-" + cat + " .pet-count");
+  if (el) el.textContent = `🤍 petted ${next}×`;
+  await supabase.from("moods").update({ pets: next }).eq("cat", cat);
+}
+
 /* ---------- wiring ---------- */
 function wireHandlers() {
   root.querySelectorAll(".nook").forEach((nook) => {
-    nook.addEventListener("click", () => openPicker(nook.dataset.cat));
+    const cat = nook.dataset.cat;
+    nook.querySelector(".cat-wrap").addEventListener("click", () => petCat(cat));
+    nook.querySelector(".mood-bubble").addEventListener("click", () => openPicker(cat));
   });
   root.querySelector(".mood-cancel").addEventListener("click", closePicker);
   root.querySelector(".mood-modal").addEventListener("click", (e) => {
@@ -267,9 +307,10 @@ function nook(cat, cushion) {
       <div class="cushion cushion--${cushion}"></div>
       ${catSVG(cat)}
     </div>
-    <div class="mood-bubble"></div>
+    <div class="mood-bubble" title="tap to change mood"></div>
     <div class="nameplate"></div>
-    <span class="tap-hint">tap to set mood</span>
+    <div class="pet-count"></div>
+    <span class="tap-hint">tap me to pet 🐾 · tap my mood to change it</span>
   </div>`;
 }
 

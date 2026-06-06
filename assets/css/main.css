@@ -388,6 +388,41 @@ body {
   transition: opacity 0.2s ease;
 }
 
+/* pet the cat 🐾 */
+.cat-wrap { cursor: pointer; }
+.cat-wrap.petting { animation: petwiggle 0.55s ease; }
+@keyframes petwiggle {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-7px) rotate(-3deg); }
+  55% { transform: translateY(0) rotate(2.5deg); }
+  80% { transform: translateY(-3px) rotate(-1deg); }
+}
+.pet-heart {
+  position: absolute; bottom: 42%; font-size: 1.15rem; color: var(--terracotta);
+  pointer-events: none; animation: petheart 1.2s ease-out forwards;
+}
+@keyframes petheart {
+  0% { opacity: 0; transform: translateY(0) scale(0.6); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-66px) scale(1.15); }
+}
+.purr {
+  position: absolute; top: 26%; left: 50%; transform: translateX(-50%);
+  font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--ink-soft);
+  pointer-events: none; opacity: 0; animation: purrpop 1s ease forwards;
+}
+@keyframes purrpop {
+  0% { opacity: 0; transform: translate(-50%, 6px); }
+  30% { opacity: 0.85; }
+  100% { opacity: 0; transform: translate(-50%, -12px); }
+}
+.pet-count {
+  font-family: "Caveat", cursive; font-size: 0.95rem;
+  color: var(--terracotta-deep); margin-top: 2px; min-height: 1.1em;
+}
+.mood-bubble { cursor: pointer; transition: transform 0.1s ease; }
+.mood-bubble:hover { transform: translateY(-1px); }
+
 /* mood picker modal */
 .mood-modal {
   position: fixed; inset: 0; z-index: 50;
