@@ -59,7 +59,10 @@ export async function initRoom(container) {
         { event: "*", schema: "public", table: "moods" },
         (payload) => {
           if (payload.new && payload.new.cat) {
-            state[payload.new.cat] = payload.new;
+            const c = payload.new.cat;
+            const localPets = (state[c] && state[c].pets) || 0;
+            // pets only ever increase — don't let a lagging echo roll it back
+            state[c] = { ...payload.new, pets: Math.max(payload.new.pets || 0, localPets) };
             renderAll();
           }
         })
@@ -237,7 +240,7 @@ function petCat(cat) {
   setTimeout(() => purr.remove(), 1000);
 
   bumpPets(cat);
-  earn(1);            // a pet earns a treat 🐟
+  earn(100);          // DEBUG: 100 treats per pet (revert to 1 later)
 }
 
 /* paint on the cosmetics bought in the shop */
@@ -250,7 +253,7 @@ function applyCosmetics(s) {
     const hatEl = root.querySelector("#spot-" + cat + " .cat-hat");
     if (!hatEl) continue;
     const it = s.equipped[cat] ? itemById(s.equipped[cat]) : null;
-    hatEl.textContent = it ? it.emoji : "";
+    hatEl.innerHTML = it ? it.svg : "";
   }
 
   const extras = root.querySelector(".room-extras");
@@ -259,17 +262,21 @@ function applyCosmetics(s) {
       .filter((id) => s.owned.has(id))
       .map((id) => {
         const it = itemById(id);
-        return it ? `<span class="room-extra" style="${it.style}">${it.emoji}</span>` : "";
+        return it ? `<span class="room-extra" style="${it.style}">${it.svg}</span>` : "";
       }).join("");
   }
 }
 
-async function bumpPets(cat) {
+const petTimer = {};
+function bumpPets(cat) {
   const next = ((state[cat] && state[cat].pets) || 0) + 1;
   state[cat] = { ...(state[cat] || { cat }), cat, pets: next };
   const el = root.querySelector("#spot-" + cat + " .pet-count");
   if (el) el.textContent = `🤍 petted ${next}×`;
-  await supabase.from("moods").update({ pets: next }).eq("cat", cat);
+  clearTimeout(petTimer[cat]);      // coalesce rapid pets into one write
+  petTimer[cat] = setTimeout(() => {
+    supabase.from("moods").update({ pets: state[cat].pets }).eq("cat", cat);
+  }, 500);
 }
 
 /* ---------- wiring ---------- */

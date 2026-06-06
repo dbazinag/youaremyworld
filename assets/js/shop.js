@@ -28,7 +28,7 @@ function render(s) {
   const ownedDecor = CATALOG.decor.filter((d) => s.owned.has(d.id));
   root.querySelector(".place-decor").innerHTML = ownedDecor.length
     ? ownedDecor.map((d) =>
-        `<button class="decor-toggle ${s.equipped.decor.includes(d.id) ? "on" : ""}" data-id="${d.id}">${d.emoji} ${d.name}</button>`
+        `<button class="decor-toggle ${s.equipped.decor.includes(d.id) ? "on" : ""}" data-id="${d.id}"><span class="mini-svg">${d.svg}</span> ${d.name}</button>`
       ).join("")
     : `<span class="muted">buy some decor and you can place it here ✨</span>`;
 }
@@ -37,7 +37,7 @@ function card(it, s) {
   const owned = s.owned.has(it.id);
   const afford = s.treats >= it.price;
   return `<div class="shop-item">
-    <span class="shop-emoji">${it.emoji}</span>
+    <span class="shop-emoji">${it.svg}</span>
     <span class="shop-name">${it.name}</span>
     ${owned
       ? `<span class="shop-owned">owned ✓</span>`
@@ -49,7 +49,7 @@ function hatPicker(cat, ownedHats, s) {
   const cur = s.equipped[cat];
   let html = `<button class="hat-pick ${cur == null ? "on" : ""}" data-cat="${cat}" data-id="">none</button>`;
   html += ownedHats.map((h) =>
-    `<button class="hat-pick ${cur === h.id ? "on" : ""}" data-cat="${cat}" data-id="${h.id}" title="${h.name}">${h.emoji}</button>`
+    `<button class="hat-pick ${cur === h.id ? "on" : ""}" data-cat="${cat}" data-id="${h.id}" title="${h.name}"><span class="mini-svg">${h.svg}</span></button>`
   ).join("");
   if (!ownedHats.length) html += `<span class="muted">buy a hat first ✨</span>`;
   return html;

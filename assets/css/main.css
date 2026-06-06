@@ -682,11 +682,15 @@ body {
   border: 1px solid rgba(168,92,65,0.2); box-shadow: 0 2px 0 rgba(168,92,65,0.1);
 }
 .cat-hat {
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%) rotate(-8deg);
-  font-size: 1.7rem; z-index: 2; pointer-events: none;
+  position: absolute; top: 20px; z-index: 2; pointer-events: none;
+  transform: translateX(-50%) rotate(-6deg);
 }
+.cat-hat svg { width: 30px; height: auto; display: block; }
+.nook[data-cat="lion"] .cat-hat { left: 36%; }
+.nook[data-cat="mimi"] .cat-hat { left: 60%; }
 .room-extras { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.room-extra { position: absolute; font-size: 1.7rem; }
+.room-extra { position: absolute; }
+.room-extra svg { height: 42px; width: auto; display: block; }
 
 /* ============ shop ============ */
 .shop .treat-balance { font-family: "Caveat", cursive; font-size: 1.8rem; color: var(--terracotta-deep); margin: 0.2em 0; }
@@ -699,7 +703,10 @@ body {
   padding: 12px 6px; background: var(--paper); border-radius: 12px;
   border: 1px solid rgba(168,92,65,0.18);
 }
-.shop-emoji { font-size: 2rem; }
+.shop-emoji { display: flex; align-items: center; justify-content: center; height: 46px; }
+.shop-emoji svg { width: 44px; height: 44px; }
+.mini-svg { display: inline-flex; vertical-align: middle; }
+.mini-svg svg { width: 22px; height: 22px; }
 .shop-name { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--ink); }
 .shop-buy {
   font-family: "Caveat", cursive; font-size: 1rem; cursor: pointer;
