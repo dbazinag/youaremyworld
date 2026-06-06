@@ -16,6 +16,7 @@ let modalEl = null;   // add-memory form  (moved to <body>)
 let detailEl = null;  // memory lightbox  (moved to <body>)
 let memories = [];
 let mode = "scrapbook";
+let currentMemory = null;
 
 export async function initTimeline(container) {
   root = container;
@@ -253,6 +254,8 @@ function sparkle(x, y) {
 async function openMemory(id) {
   const m = memories.find((x) => x.id === id);
   if (!m) return;
+  currentMemory = m;
+  resetDelBtn();
   detailEl.querySelector(".detail-title").textContent = m.title;
   detailEl.querySelector(".detail-meta").textContent =
     fmtDate(m.event_date) + (m.place ? ` · ${m.place}` : "");
@@ -288,9 +291,38 @@ function wire() {
     if (b) { mode = b.dataset.mode; render(); }
   });
   detailEl.addEventListener("click", (e) => {
-    if (e.target.classList.contains("tl-detail") || e.target.classList.contains("detail-close"))
-      detailEl.hidden = true;
+    if (e.target.classList.contains("tl-detail") || e.target.classList.contains("detail-close")) {
+      detailEl.hidden = true; return;
+    }
+    const del = e.target.closest(".detail-del");
+    if (del) {
+      if (del.dataset.armed) deleteMemory(currentMemory);
+      else {
+        del.dataset.armed = "1";
+        del.textContent = "tap again to delete 🗑";
+        del._t = setTimeout(resetDelBtn, 3000);
+      }
+    }
   });
+}
+
+function resetDelBtn() {
+  const del = detailEl.querySelector(".detail-del");
+  if (!del) return;
+  clearTimeout(del._t);
+  del.dataset.armed = "";
+  del.textContent = "🗑 delete this memory";
+}
+
+async function deleteMemory(m) {
+  if (!m) return;
+  const photos = photosOf(m);
+  if (photos.length) await supabase.storage.from("memories").remove(photos);
+  const { error } = await supabase.from("memories").delete().eq("id", m.id);
+  if (error) { setStatus("couldn't delete 😿 — " + error.message); return; }
+  detailEl.hidden = true;
+  currentMemory = null;
+  await load();
 }
 
 function openForm()  { modalEl.hidden = false; }
@@ -387,6 +419,7 @@ function shell() {
       <strong class="detail-title"></strong>
       <span class="detail-meta"></span>
       <p class="detail-note"></p>
+      <button class="detail-del">🗑 delete this memory</button>
     </div>
   </div>`;
 }

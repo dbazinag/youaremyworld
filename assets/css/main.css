@@ -624,6 +624,13 @@ body {
 .detail-title { display: block; font-family: "Caveat", cursive; font-size: 1.7rem; color: var(--ink); }
 .detail-meta { display: block; font-size: 0.85rem; color: var(--ink-soft); margin-top: 2px; }
 .detail-note { font-size: 0.95rem; color: var(--ink-soft); font-style: italic; margin: 8px 0 0; }
+.detail-del {
+  margin-top: 16px; font-family: "Caveat", cursive; font-size: 1.05rem; cursor: pointer;
+  background: none; border: 1px solid rgba(168,92,65,0.25); border-radius: 999px;
+  padding: 4px 16px; color: var(--ink-soft); transition: all 0.15s ease;
+}
+.detail-del:hover { color: var(--terracotta-deep); border-color: var(--terracotta); }
+.detail-del[data-armed="1"] { background: var(--terracotta); color: #fff; border-color: var(--terracotta-deep); }
 
 /* ============ map ============ */
 .map .map-status { color: var(--terracotta-deep); font-size: 0.9rem; min-height: 1.1em; }
