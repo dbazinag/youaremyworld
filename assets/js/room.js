@@ -302,16 +302,12 @@ function onExtraUp() {
   if (d.moved && d.x != null) setDecorPos(d.id, +d.x.toFixed(1), +d.y.toFixed(1));
 }
 
-const petTimer = {};
 function bumpPets(cat) {
   const next = ((state[cat] && state[cat].pets) || 0) + 1;
   state[cat] = { ...(state[cat] || { cat }), cat, pets: next };
   const el = root.querySelector("#spot-" + cat + " .pet-count");
   if (el) el.textContent = `🤍 petted ${next}×`;
-  clearTimeout(petTimer[cat]);      // coalesce rapid pets into one write
-  petTimer[cat] = setTimeout(() => {
-    supabase.from("moods").update({ pets: state[cat].pets }).eq("cat", cat);
-  }, 500);
+  supabase.from("moods").update({ pets: next }).eq("cat", cat);  // save now so it survives refresh
 }
 
 /* ---------- wiring ---------- */
