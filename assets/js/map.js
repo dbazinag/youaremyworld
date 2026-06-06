@@ -187,7 +187,7 @@ function wire() {
     input.value = "";
     const { error } = await supabase.from("places").insert({ name, wish: true });
     if (error) { setStatus("couldn't add 😿 — " + error.message); return; }
-    earn(3);            // a dream spot earns treats 🐟
+    earn(1);            // a dream spot earns a treat 🐟
     await load();
   });
 

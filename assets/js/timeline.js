@@ -106,7 +106,7 @@ async function addMemory(form) {
 
   closeForm();
   setStatus("");
-  earn(5);            // a new memory earns treats 🐟
+  earn(10);           // a new memory earns treats 🐟
   await load();
 }
 

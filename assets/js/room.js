@@ -240,7 +240,7 @@ function petCat(cat) {
   setTimeout(() => purr.remove(), 1000);
 
   bumpPets(cat);
-  earn(100);          // DEBUG: 100 treats per pet (revert to 1 later)
+  if (Math.random() < 0.05) earn(1);   // a pet has a 5% chance of a treat 🐟
 }
 
 /* paint on the cosmetics bought in the shop */
