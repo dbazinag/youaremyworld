@@ -10,9 +10,18 @@ import { supabase } from "./supabase.js";
 import { CONFIG } from "./config.js";
 
 const HOMES = [
-  { name: `${CONFIG.people.lion.name}'s home · ${CONFIG.people.lion.city}`, lat: 46.519, lon: 6.632 },
-  { name: `${CONFIG.people.mimi.name}'s home · ${CONFIG.people.mimi.city}`, lat: 44.389, lon: -79.690 },
+  { label: `${CONFIG.people.lion.name}'s home`, city: CONFIG.people.lion.city, lat: 46.519, lon: 6.632 },
+  { label: `${CONFIG.people.mimi.name}'s home`, city: CONFIG.people.mimi.city, lat: 44.389, lon: -79.690 },
 ];
+
+/* a place that's really one of our homes shouldn't get a "been" heart */
+function isHome(name) {
+  const a = name.toLowerCase().trim();
+  return HOMES.some((h) => {
+    const c = h.city.toLowerCase().split(",")[0].trim();
+    return a === c || a.includes(c) || c.includes(a);
+  });
+}
 
 let root = null, map = null, markers = null, threadDrawn = false;
 let places = [], memCounts = {};
@@ -28,7 +37,7 @@ export async function initMap(container) {
 /* ---------- map ---------- */
 function setupMap() {
   const el = root.querySelector(".map-canvas");
-  map = L.map(el, { scrollWheelZoom: false, worldCopyJump: true }).setView([40, 0], 2);
+  map = L.map(el, { scrollWheelZoom: true, worldCopyJump: true }).setView([40, 0], 2);
   L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
     subdomains: "abcd", maxZoom: 18,
     attribution: '© OpenStreetMap · © CARTO',
@@ -98,17 +107,24 @@ function draw() {
   markers.clearLayers();
   const bounds = [];
 
-  // homes + thread
+  // homes
   HOMES.forEach((h) => {
-    L.marker([h.lat, h.lon], { icon: pin("home", "⌂") }).addTo(markers).bindPopup(h.name);
+    L.marker([h.lat, h.lon], { icon: pin("home", "⌂") }).addTo(markers)
+      .bindPopup(`<strong>${esc(h.label)}</strong><br>${esc(h.city)}`);
     bounds.push([h.lat, h.lon]);
   });
-  L.polyline(HOMES.map((h) => [h.lat, h.lon]), {
-    color: "#c8785b", weight: 2, dashArray: "4 6", opacity: 0.8,
+
+  // a gentle arc between the homes, with a heart at its peak
+  const arc = arcPoints(HOMES[0], HOMES[1], 30);
+  L.polyline(arc, { color: "#c8785b", weight: 2, dashArray: "3 7", opacity: 0.85 }).addTo(markers);
+  L.marker(arc[Math.floor(arc.length / 2)], {
+    interactive: false,
+    icon: L.divIcon({ className: "", html: `<span class="thread-heart">♥</span>`, iconSize: [22, 22], iconAnchor: [11, 11] }),
   }).addTo(markers);
 
   for (const p of places) {
     if (p.lat == null) continue;
+    if (!p.wish && isHome(p.name)) continue;        // home, not a "been" spot
     const kind = p.wish ? "wish" : "been";
     const glyph = p.wish ? "✦" : "♥";
     const sub = p.wish ? "someday" : `${memCounts[p.name] || 0} ${(memCounts[p.name] === 1 ? "memory" : "memories")}`;
@@ -118,7 +134,21 @@ function draw() {
     bounds.push([p.lat, p.lon]);
   }
 
-  if (bounds.length) map.fitBounds(bounds, { padding: [34, 34], maxZoom: 6 });
+  if (bounds.length) map.fitBounds(bounds, { padding: [40, 40], maxZoom: 6 });
+}
+
+/* quadratic-bezier arc (control point bumped north) for a cute flight-path curve */
+function arcPoints(a, b, n) {
+  const cLat = (a.lat + b.lat) / 2 + 16, cLon = (a.lon + b.lon) / 2;
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, u = 1 - t;
+    pts.push([
+      u * u * a.lat + 2 * u * t * cLat + t * t * b.lat,
+      u * u * a.lon + 2 * u * t * cLon + t * t * b.lon,
+    ]);
+  }
+  return pts;
 }
 
 function pin(kind, glyph) {
@@ -131,12 +161,13 @@ function pin(kind, glyph) {
 
 /* ---------- lists ---------- */
 function renderLists() {
-  const been = places.filter((p) => !p.wish).sort((a, b) => a.name.localeCompare(b.name));
+  const been = places.filter((p) => !p.wish && !isHome(p.name)).sort((a, b) => a.name.localeCompare(b.name));
   const wish = places.filter((p) => p.wish).sort((a, b) => a.name.localeCompare(b.name));
 
   root.querySelector(".been-list").innerHTML = been.length
-    ? been.map((p) => `<li><button class="place-go" data-id="${p.id}">${esc(p.name)}</button>
-        <span class="place-meta">${p.lat == null ? "·not found" : (memCounts[p.name] || 0)}</span></li>`).join("")
+    ? been.map((p) => `<li><button class="place-go" data-id="${p.id}">${esc(p.name)} ${
+        p.lat == null ? `<span class="cnt muted">·not found</span>` : `<span class="cnt">♥${memCounts[p.name] || 0}</span>`
+      }</button></li>`).join("")
     : `<li class="muted">tag a memory with a place and it'll appear here</li>`;
 
   root.querySelector(".wish-list").innerHTML = wish.length

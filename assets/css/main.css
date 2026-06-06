@@ -595,17 +595,26 @@ body {
   height: 380px; margin-top: 10px; border-radius: 14px; overflow: hidden;
   border: 2px solid rgba(168,92,65,0.2); background: #dfe7ec;
 }
-.cozy-map .leaflet-tile { filter: sepia(0.22) saturate(0.92) brightness(1.03) hue-rotate(-6deg); }
+.cozy-map .leaflet-tile { filter: sepia(0.34) saturate(1.04) brightness(1.04) hue-rotate(-8deg) contrast(0.97); }
 .leaflet-popup-content strong { font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--ink); }
 
 .pin {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 26px; height: 26px; border-radius: 50%; font-size: 0.95rem;
-  color: #fff; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(59,51,44,0.35);
+  width: 28px; height: 28px; border-radius: 50% 50% 50% 50%; font-size: 1rem;
+  color: #fff; border: 2.5px solid #fff; box-shadow: 0 3px 6px rgba(59,51,44,0.35);
+  transition: transform 0.12s ease;
 }
+.leaflet-marker-icon:hover .pin { transform: scale(1.2) translateY(-1px); }
 .pin--been { background: var(--terracotta); }
 .pin--wish { background: var(--sage); }
-.pin--home { background: var(--ink); }
+.pin--home { background: var(--ink); font-size: 1.1rem; }
+.thread-heart {
+  color: var(--terracotta); font-size: 1.25rem;
+  filter: drop-shadow(0 1px 2px rgba(59,51,44,0.3));
+  animation: drift 3s ease-in-out infinite;
+}
+.cnt { font-size: 0.82rem; color: var(--terracotta-deep); }
+.cnt.muted { color: var(--ink-soft); font-style: italic; }
 
 .map-lists { display: flex; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
 .map-col { flex: 1; min-width: 180px; }
