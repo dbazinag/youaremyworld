@@ -7,11 +7,14 @@
 import { initRoom } from "./room.js";
 import { initTimeline } from "./timeline.js";
 import { initMap } from "./map.js";
+import { initShop } from "./shop.js";
+import { initWallet } from "./wallet.js";
 
 const VIEWS = [
   { key: "room",     label: "our room",     init: initRoom },
   { key: "timeline", label: "our timeline", init: initTimeline },
   { key: "map",      label: "our map",      init: initMap },
+  { key: "shop",     label: "shop ✨",      init: initShop },
 ];
 
 let built = false;
@@ -20,6 +23,8 @@ const state = {};
 export function initApp() {
   if (built) return;
   built = true;
+
+  initWallet(); // shared treats/unlocks, loaded once
 
   const nav = document.getElementById("app-nav");
   const content = document.getElementById("app-content");

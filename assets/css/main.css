@@ -674,6 +674,54 @@ body {
 .wish-form input:focus { outline: 2px solid var(--terracotta); outline-offset: 1px; }
 .wish-form .btn { margin-top: 0 !important; font-size: 1rem !important; padding: 0.32em 0.8em !important; }
 
+/* ============ treats in the room ============ */
+.treat-balance-room {
+  position: absolute; top: 10px; left: 12px; z-index: 3;
+  font-family: "Caveat", cursive; font-size: 1.15rem; color: var(--terracotta-deep);
+  background: var(--paper); padding: 1px 12px; border-radius: 999px;
+  border: 1px solid rgba(168,92,65,0.2); box-shadow: 0 2px 0 rgba(168,92,65,0.1);
+}
+.cat-hat {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%) rotate(-8deg);
+  font-size: 1.7rem; z-index: 2; pointer-events: none;
+}
+.room-extras { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.room-extra { position: absolute; font-size: 1.7rem; }
+
+/* ============ shop ============ */
+.shop .treat-balance { font-family: "Caveat", cursive; font-size: 1.8rem; color: var(--terracotta-deep); margin: 0.2em 0; }
+.shop-hint { font-size: 0.9rem; color: var(--ink-soft); margin: 0 0 0.4em; }
+.shop-status { color: var(--terracotta-deep); min-height: 1.1em; font-size: 0.95rem; }
+.shop-h { font-family: "Caveat", cursive; font-size: 1.4rem; color: var(--ink); margin: 1.1em 0 0.4em; text-align: left; }
+.shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px; }
+.shop-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 12px 6px; background: var(--paper); border-radius: 12px;
+  border: 1px solid rgba(168,92,65,0.18);
+}
+.shop-emoji { font-size: 2rem; }
+.shop-name { font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--ink); }
+.shop-buy {
+  font-family: "Caveat", cursive; font-size: 1rem; cursor: pointer;
+  background: var(--terracotta); color: #fff; border: none; border-radius: 999px;
+  padding: 3px 12px; box-shadow: 0 3px 0 var(--terracotta-deep);
+}
+.shop-buy:disabled { background: #c9bda8; box-shadow: 0 3px 0 #b3a589; cursor: not-allowed; }
+.shop-owned { font-family: "Caveat", cursive; font-size: 1rem; color: var(--sage); }
+
+.dress-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.dress-who { font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--terracotta-deep); width: 52px; }
+.dress-pick, .place-decor { display: flex; gap: 6px; flex-wrap: wrap; }
+.hat-pick, .decor-toggle {
+  cursor: pointer; background: var(--paper); border: 1px solid rgba(168,92,65,0.2);
+  border-radius: 10px; padding: 5px 11px; font-family: "Caveat", cursive;
+  font-size: 1.2rem; color: var(--ink); transition: transform 0.1s ease;
+}
+.hat-pick:hover, .decor-toggle:hover { transform: translateY(-1px); }
+.hat-pick.on, .decor-toggle.on { background: var(--sage); color: #fff; border-color: #6f7e60; }
+.decor-toggle { font-size: 1rem; }
+.shop .muted { color: var(--ink-soft); font-style: italic; font-size: 0.9rem; }
+
 @media (prefers-reduced-motion: reduce) {
   *, .screen.is-active { animation: none !important; }
 }

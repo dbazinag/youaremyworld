@@ -8,6 +8,7 @@
 
 import { supabase } from "./supabase.js";
 import { CONFIG } from "./config.js";
+import { onWalletChange, getState, earn, itemById } from "./wallet.js";
 
 const MOODS = [
   { key: "cozy",     emoji: "😌",  label: "cozy" },
@@ -40,6 +41,8 @@ export async function initRoom(container) {
   root = container;
   root.innerHTML = roomShell();
   wireHandlers();
+  onWalletChange(applyCosmetics);
+  applyCosmetics(getState());
 
   const { data, error } = await supabase.from("moods").select("*");
   if (error) {
@@ -234,6 +237,31 @@ function petCat(cat) {
   setTimeout(() => purr.remove(), 1000);
 
   bumpPets(cat);
+  earn(1);            // a pet earns a treat 🐟
+}
+
+/* paint on the cosmetics bought in the shop */
+function applyCosmetics(s) {
+  if (!root) return;
+  const bal = root.querySelector(".treat-balance-room");
+  if (bal) bal.textContent = `🐟 ${s.treats}`;
+
+  for (const cat of ["lion", "mimi"]) {
+    const hatEl = root.querySelector("#spot-" + cat + " .cat-hat");
+    if (!hatEl) continue;
+    const it = s.equipped[cat] ? itemById(s.equipped[cat]) : null;
+    hatEl.textContent = it ? it.emoji : "";
+  }
+
+  const extras = root.querySelector(".room-extras");
+  if (extras) {
+    extras.innerHTML = (s.equipped.decor || [])
+      .filter((id) => s.owned.has(id))
+      .map((id) => {
+        const it = itemById(id);
+        return it ? `<span class="room-extra" style="${it.style}">${it.emoji}</span>` : "";
+      }).join("");
+  }
 }
 
 async function bumpPets(cat) {
@@ -275,6 +303,8 @@ function roomShell() {
     <p class="room-status"></p>
 
     <div class="room-scene">
+      <div class="treat-balance-room" title="treats"></div>
+      <div class="room-extras" aria-hidden="true"></div>
       <span class="deco-garland" aria-hidden="true"></span>
       <span class="deco-frame" aria-hidden="true">♡</span>
       <span class="deco-plant" aria-hidden="true"></span>
@@ -304,6 +334,7 @@ function nook(cat, cushion) {
     <div class="window"><div class="sky"></div></div>
     <div class="cat-wrap">
       <span class="zzz-room">z &nbsp;z &nbsp;z</span>
+      <span class="cat-hat" aria-hidden="true"></span>
       <div class="cushion cushion--${cushion}"></div>
       ${catSVG(cat)}
     </div>

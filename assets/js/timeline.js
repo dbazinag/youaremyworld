@@ -9,6 +9,7 @@
 
 import { supabase } from "./supabase.js";
 import exifr from "https://esm.sh/exifr@7";
+import { earn } from "./wallet.js";
 
 let root = null;
 let modalEl = null;   // add-memory form  (moved to <body>)
@@ -105,6 +106,7 @@ async function addMemory(form) {
 
   closeForm();
   setStatus("");
+  earn(5);            // a new memory earns treats 🐟
   await load();
 }
 

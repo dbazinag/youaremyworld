@@ -8,6 +8,7 @@
 import L from "https://esm.sh/leaflet@1.9.4";
 import { supabase } from "./supabase.js";
 import { CONFIG } from "./config.js";
+import { earn } from "./wallet.js";
 
 const HOMES = [
   { label: `${CONFIG.people.lion.name}'s home`, city: CONFIG.people.lion.city, lat: 46.519, lon: 6.632 },
@@ -186,6 +187,7 @@ function wire() {
     input.value = "";
     const { error } = await supabase.from("places").insert({ name, wish: true });
     if (error) { setStatus("couldn't add 😿 — " + error.message); return; }
+    earn(3);            // a dream spot earns treats 🐟
     await load();
   });
 
