@@ -120,8 +120,8 @@ function set(sel, v) { const el = root.querySelector(sel); if (el) el.textConten
 function setStat(name, v) { const el = root.querySelector(`[data-stat="${name}"]`); if (el) el.textContent = v; }
 
 /* ---------- markup ---------- */
-function card(stat, label) {
-  return `<div class="stat-card"><span class="stat-num" data-stat="${stat}">–</span><span class="stat-lbl">${label}</span></div>`;
+function card(stat, label, ico) {
+  return `<div class="stat-card"><span class="stat-ico">${ico}</span><span class="stat-num" data-stat="${stat}">–</span><span class="stat-lbl">${label}</span></div>`;
 }
 function shell() {
   return `
@@ -139,15 +139,15 @@ function shell() {
     <p class="milestone-line"></p>
 
     <div class="stat-grid">
-      ${card("together", "days together")}
-      ${card("reunion", "days till we meet")}
-      ${card("distance", "apart")}
-      ${card("memories", "memories")}
-      ${card("places", "places been")}
-      ${card("dreams", "dream spots")}
-      ${card("doodles", "doodles")}
-      ${card("pets", "cat pets")}
-      ${card("treats", "treats 🐟")}
+      ${card("together", "days together", "💞")}
+      ${card("reunion", "days till we meet", "✈️")}
+      ${card("distance", "apart", "🌍")}
+      ${card("memories", "memories", "📸")}
+      ${card("places", "places been", "📍")}
+      ${card("dreams", "dream spots", "✦")}
+      ${card("doodles", "doodles", "✏️")}
+      ${card("pets", "cat pets", "🐾")}
+      ${card("treats", "treats", "🐟")}
     </div>
 
     <p class="mood-line"></p>

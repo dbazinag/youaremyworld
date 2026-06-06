@@ -56,6 +56,9 @@ function hatPicker(cat, ownedHats, s) {
 }
 
 function wire() {
+  root.querySelector(".shop-back").addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("app:navigate", { detail: "room" }));
+  });
   root.addEventListener("click", async (e) => {
     const buyBtn = e.target.closest(".shop-buy");
     if (buyBtn) {
@@ -82,6 +85,7 @@ function flash(t) {
 function shell() {
   return `
   <div class="journal shop">
+    <button class="shop-back">← our room</button>
     <p class="kicker">earned by loving on each other</p>
     <h2 class="title title--sm">the treat shop</h2>
     <div class="treat-balance"></div>

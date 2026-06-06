@@ -681,7 +681,16 @@ body {
   font-family: "Caveat", cursive; font-size: 1.15rem; color: var(--terracotta-deep);
   background: var(--paper); padding: 1px 12px; border-radius: 999px;
   border: 1px solid rgba(168,92,65,0.2); box-shadow: 0 2px 0 rgba(168,92,65,0.1);
+  cursor: pointer; transition: transform 0.1s ease, background 0.15s ease;
 }
+.treat-balance-room:hover { transform: translateY(-1px); background: #fff4e2; }
+
+.shop-back {
+  position: absolute; top: 10px; left: 14px; z-index: 3;
+  font-family: "Caveat", cursive; font-size: 1.1rem; cursor: pointer;
+  background: none; border: none; color: var(--ink-soft);
+}
+.shop-back:hover { color: var(--terracotta-deep); }
 .cat-hat {
   position: absolute; top: 20px; z-index: 2; pointer-events: none;
   transform: translateX(-50%) rotate(-6deg);
@@ -803,6 +812,7 @@ body {
   padding: 14px 8px; background: var(--paper); border-radius: 12px;
   border: 1px solid rgba(168,92,65,0.16); box-shadow: 0 3px 0 rgba(168,92,65,0.08);
 }
+.stat-ico { font-size: 1.3rem; line-height: 1; }
 .stat-num { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.45rem; color: var(--ink); line-height: 1.1; text-align: center; }
 .stat-lbl { font-family: "Caveat", cursive; font-size: 1.05rem; color: var(--ink-soft); text-align: center; }
 .mood-line { font-size: 1.05rem; color: var(--ink-soft); margin-top: 1.4em; }

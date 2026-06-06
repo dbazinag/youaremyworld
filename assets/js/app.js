@@ -18,7 +18,7 @@ const VIEWS = [
   { key: "timeline", label: "our timeline 📖", init: initTimeline },
   { key: "map",      label: "our map 🗺️",      init: initMap },
   { key: "doodles",  label: "doodles ✏️",      init: initDoodles },
-  { key: "shop",     label: "shop ✨",         init: initShop },
+  { key: "shop",     label: "shop ✨",         init: initShop, nav: false }, // reached from the room
 ];
 
 let built = false;
@@ -33,9 +33,12 @@ export function initApp() {
   const nav = document.getElementById("app-nav");
   const content = document.getElementById("app-content");
 
-  nav.innerHTML = VIEWS.map((v) =>
+  nav.innerHTML = VIEWS.filter((v) => v.nav !== false).map((v) =>
     `<button class="app-tab" data-view="${v.key}">${v.label}</button>`
   ).join("");
+
+  // let views navigate to one another (e.g. room -> shop -> room)
+  document.addEventListener("app:navigate", (e) => showView(e.detail));
 
   for (const v of VIEWS) {
     const el = document.createElement("div");

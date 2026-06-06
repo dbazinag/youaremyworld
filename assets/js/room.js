@@ -247,7 +247,7 @@ function petCat(cat) {
 function applyCosmetics(s) {
   if (!root) return;
   const bal = root.querySelector(".treat-balance-room");
-  if (bal) bal.textContent = `🐟 ${s.treats}`;
+  if (bal) bal.textContent = `🐟 ${s.treats} · shop ✨`;
 
   for (const cat of ["lion", "mimi"]) {
     const hatEl = root.querySelector("#spot-" + cat + " .cat-hat");
@@ -334,6 +334,9 @@ function wireHandlers() {
     location.reload();
   });
   root.querySelector(".room-extras").addEventListener("pointerdown", onExtraDown);
+  root.querySelector(".treat-balance-room").addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("app:navigate", { detail: "shop" }));
+  });
 }
 
 /* ---------- markup ---------- */
