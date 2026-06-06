@@ -32,11 +32,11 @@ export const CATALOG = {
     { id: "crown",  svg: HAT.crown,  name: "crown",      price: 35 },
   ],
   decor: [
-    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, style: "bottom:4px;left:14px;height:50px" },
-    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, style: "bottom:2px;right:16px;height:62px" },
-    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, style: "bottom:6px;left:22%;height:30px" },
-    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  style: "bottom:12px;left:49%;height:24px" },
-    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, style: "top:54px;right:130px;height:56px" },
+    { id: "plant",   svg: ITEM.plant,   name: "plant",    price: 10, style: "bottom:4px;left:18px;height:52px" },
+    { id: "ball",    svg: ITEM.ball,    name: "toy ball", price: 8,  style: "bottom:10px;left:96px;height:26px" },
+    { id: "lamp",    svg: ITEM.lamp,    name: "lamp",     price: 15, style: "bottom:2px;right:20px;height:64px" },
+    { id: "pouf",    svg: ITEM.pouf,    name: "pouf",     price: 14, style: "bottom:8px;right:104px;height:30px" },
+    { id: "balloon", svg: ITEM.balloon, name: "balloon",  price: 12, style: "top:128px;left:50%;transform:translateX(-50%);height:58px" },
   ],
 };
 
