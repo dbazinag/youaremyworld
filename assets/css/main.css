@@ -781,6 +781,33 @@ body {
 .doodle-del:hover { color: var(--terracotta-deep); }
 .doodles .muted { color: var(--ink-soft); font-style: italic; font-size: 1rem; }
 
+/* ============ stats / us in numbers ============ */
+.love-counter { display: flex; justify-content: center; flex-wrap: wrap; gap: clamp(8px, 2.5vw, 18px); margin-top: 0.4em; }
+.lc-unit {
+  background: var(--paper); border: 1px solid rgba(168,92,65,0.18); border-radius: 10px;
+  padding: clamp(8px,2vw,14px) clamp(10px,2.6vw,20px); min-width: clamp(64px,16vw,92px);
+  box-shadow: 0 4px 0 rgba(168,92,65,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+}
+.lc-unit:nth-child(odd)  { transform: rotate(-1.5deg); }
+.lc-unit:nth-child(even) { transform: rotate(1.5deg); }
+.lc-num { display: block; font-weight: 600; font-size: clamp(1.5rem,5vw,2.4rem); line-height: 1; color: var(--terracotta-deep); font-variant-numeric: tabular-nums; }
+.lc-lbl { display: block; margin-top: 4px; font-family: "Caveat", cursive; font-size: clamp(0.9rem,2.4vw,1.1rem); color: var(--ink-soft); }
+.love-caption { font-size: 1.15rem; color: var(--ink-soft); margin: 0.8em 0 0.2em; }
+.love-caption strong { color: var(--terracotta-deep); font-style: normal; }
+.milestone-line { font-size: 0.95rem; color: var(--ink-soft); margin: 0.2em 0 1.1em; }
+.milestone-line strong { color: var(--terracotta-deep); }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; margin-top: 0.4em; }
+.stat-card {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 14px 8px; background: var(--paper); border-radius: 12px;
+  border: 1px solid rgba(168,92,65,0.16); box-shadow: 0 3px 0 rgba(168,92,65,0.08);
+}
+.stat-num { font-family: "Fraunces", serif; font-weight: 600; font-size: 1.45rem; color: var(--ink); line-height: 1.1; text-align: center; }
+.stat-lbl { font-family: "Caveat", cursive; font-size: 1.05rem; color: var(--ink-soft); text-align: center; }
+.mood-line { font-size: 1.05rem; color: var(--ink-soft); margin-top: 1.4em; }
+.mood-line strong { color: var(--terracotta-deep); }
+
 @media (prefers-reduced-motion: reduce) {
   *, .screen.is-active { animation: none !important; }
 }

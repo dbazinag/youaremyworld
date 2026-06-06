@@ -9,6 +9,9 @@ export const CONFIG = {
   // June 18, 2026, 6:00 PM in Barrie (Eastern, EDT = -04:00):
   reunionISO: "2026-06-18T18:00:00-04:00",
 
+  // the day it all began 🤍 (used by the stats / time-in-love counter)
+  togetherSince: "2025-04-25",
+
   // Supabase backend. The publishable key is meant to be public — your data is
   // protected by access rules (RLS), not by hiding this key.
   supabase: {
