@@ -161,7 +161,7 @@ function pin(kind, glyph) {
 
 /* ---------- lists ---------- */
 function renderLists() {
-  const been = places.filter((p) => !p.wish && !isHome(p.name)).sort((a, b) => a.name.localeCompare(b.name));
+  const been = places.filter((p) => !p.wish).sort((a, b) => a.name.localeCompare(b.name));
   const wish = places.filter((p) => p.wish).sort((a, b) => a.name.localeCompare(b.name));
 
   root.querySelector(".been-list").innerHTML = been.length
