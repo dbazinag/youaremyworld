@@ -6,8 +6,8 @@
 export const CONFIG = {
   // The reunion you're counting down to.
   // Format: YYYY-MM-DDTHH:mm:ss followed by the UTC offset.
-  // June 18, 2026, 6:00 PM in Barrie (Eastern, EDT = -04:00):
-  reunionISO: "2026-06-18T18:00:00-04:00",
+  // August 14, 2026, 5:00 PM in Ireland (Irish Standard Time, IST = +01:00):
+  reunionISO: "2026-08-14T17:00:00+01:00",
 
   // the day it all began 🤍 (used by the stats / time-in-love counter)
   togetherSince: "2025-04-25",
