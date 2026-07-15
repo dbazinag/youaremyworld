@@ -825,57 +825,12 @@ body {
 .mood-line { font-size: 1.05rem; color: var(--ink-soft); margin-top: 1.4em; }
 .mood-line strong { color: var(--terracotta-deep); }
 
-/* ============ unlock games 🔐 ============ */
-.unlock-locks { font-size: 1.5rem; letter-spacing: 8px; margin: 0.1em 0 0.3em; }
-.unlock-hints { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 0.7em; min-height: 1.4em; }
-.hint-chip {
-  background: var(--paper); border: 1px solid rgba(168,92,65,0.2); border-radius: 999px;
-  padding: 3px 12px; font-family: "Caveat", cursive; font-size: 1.1rem; color: var(--terracotta-deep);
-}
-.hint-chip b { color: var(--ink-soft); }
-.game-tip { font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--ink-soft); margin: 0 0 0.6em; }
-.unlock-solved { font-family: "Caveat", cursive; font-size: 1.3rem; color: var(--ink-soft); margin: 0.2em 0; }
-.unlock-riddle { font-family: "Caveat", cursive; font-size: 1.5rem; color: var(--terracotta-deep); margin: 0 0 0.8em; }
+/* ============ unlock gate 🔐 ============ */
 .gate-input {
   font-family: "Fraunces", serif; font-size: 1.1rem; padding: 0.5em 0.9em; border-radius: 10px;
   border: 1px solid rgba(168,92,65,0.3); background: var(--paper); color: var(--ink); text-align: center; min-width: 180px;
 }
 .gate-input:focus { outline: 2px solid var(--terracotta); outline-offset: 1px; }
-
-/* memory match */
-.mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 320px; margin: 0 auto; }
-.mem-card {
-  aspect-ratio: 1; border: none; border-radius: 10px; cursor: pointer; padding: 0;
-  background: var(--terracotta); display: flex; align-items: center; justify-content: center;
-  font-size: 1.6rem; box-shadow: 0 3px 0 var(--terracotta-deep);
-}
-.mem-card .mem-face { display: none; }
-.mem-card.flipped, .mem-card.done { background: var(--paper); box-shadow: 0 3px 0 rgba(168,92,65,0.2); }
-.mem-card.flipped .mem-back, .mem-card.done .mem-back { display: none; }
-.mem-card.flipped .mem-face, .mem-card.done .mem-face { display: block; }
-.mem-card.done { opacity: 0.5; }
-
-/* catch the treats */
-.catch-area {
-  position: relative; height: 240px; max-width: 380px; margin: 0 auto;
-  background: linear-gradient(#dff0f7, #eef8fb); border-radius: 12px;
-  overflow: hidden; border: 1px solid rgba(168,92,65,0.2); cursor: none; touch-action: none;
-}
-.catch-score { position: absolute; top: 6px; right: 12px; font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--terracotta-deep); }
-.basket { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 2rem; }
-.falling { position: absolute; font-size: 1.5rem; transform: translateX(-50%); }
-
-/* tap the cat */
-.tap-score { font-family: "Caveat", cursive; font-size: 1.2rem; color: var(--terracotta-deep); margin-bottom: 8px; }
-.tap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 280px; margin: 0 auto; }
-.tap-hole {
-  aspect-ratio: 1; border: none; border-radius: 50%; cursor: pointer; padding: 0; overflow: hidden;
-  background: #e7d6bd; display: flex; align-items: center; justify-content: center; font-size: 1.9rem;
-  box-shadow: inset 0 3px 6px rgba(90,60,30,0.22);
-}
-.tap-cat { display: none; }
-.tap-hole.up .tap-cat { display: block; animation: pop 0.18s ease; }
-@keyframes pop { from { transform: translateY(12px) scale(0.6); } to { transform: translateY(0) scale(1); } }
 
 @media (prefers-reduced-motion: reduce) {
   *, .screen.is-active { animation: none !important; }
